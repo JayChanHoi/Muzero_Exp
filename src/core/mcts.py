@@ -45,8 +45,7 @@ class Node(object):
         self.hidden_state = network_output.hidden_state
         self.reward = network_output.reward
         # softmax over policy logits
-        print(network_output.policy_logits.shape)
-        policy = {a: math.exp(network_output.policy_logits[0, a.index]) for a in actions}
+        policy = {a: math.exp(network_output.policy_logits[0, a.index].item()) for a in actions}
         policy_sum = sum(policy.values())
         for action, p in policy.items():
             self.children[action] = Node(p / policy_sum)
