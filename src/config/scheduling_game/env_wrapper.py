@@ -56,7 +56,7 @@ class SchedulingGameWrapper(Game):
             job_raw_feature_list.append(item[0])
             plant_raw_feature_list.append(item[1])
             crew_raw_feature_list.append(item[2])
-            misc_info_raw_feature_list.append(item[2])
+            misc_info_raw_feature_list.append(item[3])
         job_raw_feature = np.stack(job_raw_feature_list, axis=0)
         plant_raw_feature = np.stack(plant_raw_feature_list, axis=0)
         crew_raw_feature = np.stack(crew_raw_feature_list, axis=0)

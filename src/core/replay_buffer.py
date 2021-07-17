@@ -70,7 +70,7 @@ class ReplayBuffer(object):
             job_raw_feature_list.append(item[0])
             plant_raw_feature_list.append(item[1])
             crew_raw_feature_list.append(item[2])
-            misc_info_raw_feature_list.append(item[2])
+            misc_info_raw_feature_list.append(item[3])
         batch_job_raw_features = torch.tensor(np.stack(job_raw_feature_list, axis=0)).float()
         batch_plant_raw_features = torch.tensor(np.stack(plant_raw_feature_list, axis=0)).float()
         batch_crew_raw_features = torch.tensor(np.stack(crew_raw_feature_list, axis=0)).float()
