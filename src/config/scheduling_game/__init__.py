@@ -1,7 +1,7 @@
 import gym
 import torch
 from ...core.config import BaseMuZeroConfig, DiscreteSupport
-from env_wrapper import SchedulingGameWrapper
+from .env_wrapper import SchedulingGameWrapper
 from .model import MuZeroNetConcreteSchedulingGame
 from ...environment.concrete_production_delivery_env import ConcreteProductionDeliveryEnvV2
 
