@@ -26,16 +26,16 @@ class SchedulingGameWrapper(Game):
         return self.env.get_obs_info()
 
     def convert_action(self, action, plant_num, truck_num):
-        if action.item() == 0:
+        if action == 0:
             if_iterate = 1
             selected_job = -1
             selected_plant = -1
             selected_crew = -1
         else:
             if_iterate = 0
-            selected_job = (action.item() - 1) // (plant_num * truck_num)
-            selected_plant = (action.item() - 1 - selected_job * (plant_num * truck_num)) // truck_num
-            selected_crew = action.item() - 1 - selected_job * (plant_num * truck_num) - selected_plant * truck_num
+            selected_job = (action - 1) // (plant_num * truck_num)
+            selected_plant = (action - 1 - selected_job * (plant_num * truck_num)) // truck_num
+            selected_crew = action - 1 - selected_job * (plant_num * truck_num) - selected_plant * truck_num
 
         return selected_job, selected_plant, selected_crew, if_iterate
 
