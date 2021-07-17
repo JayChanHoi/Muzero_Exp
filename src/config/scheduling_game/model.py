@@ -97,6 +97,13 @@ class StateEncoder(nn.Module):
             nn.Linear(64, 64),
             nn.ReLU(),
         )
+
+        self.multi_time_fuse_layer = nn.Sequential(
+            nn.Linear(64*5, 256),
+            nn.ReLU(),
+            nn.Linear(256, 256),
+            nn.ReLU()
+        )
         self.job_num = job_num
         self.plant_num = plant_num
         self.truck_num = truck_num
@@ -142,8 +149,9 @@ class StateEncoder(nn.Module):
             ]
             encoded_state_list.append(self._single_time_forward(state_encoder_input))
         aggregated_encoded_state = torch.cat(encoded_state_list, dim=1)
+        output = self.multi_time_fuse_layer(aggregated_encoded_state)
 
-        return aggregated_encoded_state
+        return output
 
 class MuZeroNetConcreteSchedulingGame(BaseMuZeroNet):
     def __init__(self,
