@@ -170,7 +170,8 @@ class DataWorker(object):
                                                                         trained_steps=trained_steps)
                 while not done and eps_steps <= self.config.max_moves:
                     root = Node(0)
-                    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)
                     root.expand(env.to_play(), env.legal_actions(), network_output)
                     root.add_exploration_noise(dirichlet_alpha=self.config.root_dirichlet_alpha,
