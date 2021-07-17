@@ -707,38 +707,34 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
         """
         if action[0] == 0:
             selected_job, selected_plant, selected_truck = action[1:]
-            if self.get_available_actions()[selected_job, selected_plant, selected_truck].item() == 0:
-                self._iterate()
-                reward = -1
+            if int(self.crew.crew_coor_tensor[selected_truck, 0].item()) == -1:
+                plant_truck_dist = 0
             else:
-                if int(self.crew.crew_coor_tensor[selected_truck, 0].item()) == -1:
-                    plant_truck_dist = 0
-                else:
-                    plant_truck_dist = self.job_plant_route_distance[int(self.crew.crew_coor_tensor[selected_truck, 0].item()), selected_plant]
-                plant_job_dist = self.job_plant_route_distance[selected_job, selected_plant]
+                plant_truck_dist = self.job_plant_route_distance[int(self.crew.crew_coor_tensor[selected_truck, 0].item()), selected_plant]
+            plant_job_dist = self.job_plant_route_distance[selected_job, selected_plant]
 
-                # execute truck
-                truck_task_duration = int(((plant_job_dist + plant_truck_dist) / self.truck_travel_speed) * 60 + self.plant_process_duration  + self.job_process_duration)
-                self.crew.execute(selected_truck, truck_task_duration, self.job_id_tensor[selected_job])
+            # execute truck
+            truck_task_duration = int(((plant_job_dist + plant_truck_dist) / self.truck_travel_speed) * 60 + self.plant_process_duration  + self.job_process_duration)
+            self.crew.execute(selected_truck, truck_task_duration, self.job_id_tensor[selected_job])
 
-                # execute plant
-                plant_task_duration = self.plant_process_duration
-                plant_task_start_time = int((self.current_time - self.start_time).seconds / 60 + (plant_truck_dist / self.truck_travel_speed) * 60)
-                self.plant.execute(selected_plant, plant_task_duration, plant_task_start_time)
+            # execute plant
+            plant_task_duration = self.plant_process_duration
+            plant_task_start_time = int((self.current_time - self.start_time).seconds / 60 + (plant_truck_dist / self.truck_travel_speed) * 60)
+            self.plant.execute(selected_plant, plant_task_duration, plant_task_start_time)
 
-                # execute job
-                job_task_duration = self.job_process_duration
-                job_task_start_time = int((self.current_time - self.start_time).seconds / 60 + ((plant_job_dist + plant_truck_dist) / self.truck_travel_speed) * 60 + self.plant_process_duration)
-                self.job.execute(selected_job, job_task_duration, job_task_start_time)
+            # execute job
+            job_task_duration = self.job_process_duration
+            job_task_start_time = int((self.current_time - self.start_time).seconds / 60 + ((plant_job_dist + plant_truck_dist) / self.truck_travel_speed) * 60 + self.plant_process_duration)
+            self.job.execute(selected_job, job_task_duration, job_task_start_time)
 
-                self.job_truck_distance[:, selected_truck] = self.job_job_route_distance[:, int(self.crew.crew_coor_tensor[selected_truck, 0].item())]
-                self.plant_truck_distance[:, selected_truck] = self.job_plant_route_distance[int(self.crew.crew_coor_tensor[selected_truck, 0].item()), :]
+            self.job_truck_distance[:, selected_truck] = self.job_job_route_distance[:, int(self.crew.crew_coor_tensor[selected_truck, 0].item())]
+            self.plant_truck_distance[:, selected_truck] = self.job_plant_route_distance[int(self.crew.crew_coor_tensor[selected_truck, 0].item()), :]
 
-                truck_cost_bonus = (self.crew.number_of_trucks_in_garage().item() / self.env_config['crew_preserved_capacity'])
-                remain_qty_penalty = self.job.job_order_qty_tensor.sum().item()/self.job.job_initial_order_qty.sum().item()
-                time_factor = math.exp(((self.current_time - self.start_time).seconds / (datetime.strptime(self.env_config['max_time_str'], "%H:%M:%S") - self.start_time).seconds) - 1)
+            truck_cost_bonus = (self.crew.number_of_trucks_in_garage().item() / self.env_config['crew_preserved_capacity'])
+            remain_qty_penalty = self.job.job_order_qty_tensor.sum().item()/self.job.job_initial_order_qty.sum().item()
+            time_factor = math.exp(((self.current_time - self.start_time).seconds / (datetime.strptime(self.env_config['max_time_str'], "%H:%M:%S") - self.start_time).seconds) - 1)
 
-                reward = (truck_cost_bonus - remain_qty_penalty) * time_factor
+            reward = (truck_cost_bonus - remain_qty_penalty) * time_factor
 
         elif action[0] == 1:
             self._iterate()
