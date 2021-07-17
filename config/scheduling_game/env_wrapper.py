@@ -2,11 +2,9 @@ from collections import deque
 
 import numpy as np
 
-import torch
-
 from ...core.game import Game, Action
 
-class ClassicControlWrapper(Game):
+class SchedulingGameWrapper(Game):
     def __init__(self, env, k: int, discount: float):
         """
 
@@ -18,16 +16,17 @@ class ClassicControlWrapper(Game):
         self.frames = deque([], maxlen=k)
 
     def legal_actions(self):
-        return [Action(_) for _ in range(self.env.action_space.n)]
+        return [Action(_) for _ in self.env.get_available_actions().nonzero().squeeze().tolist()]
 
     def step(self, action):
-        obs, reward, done, info = self.env.step(action)
+
+        obs, reward, done, _ = self.env.step(action)
 
         self.rewards.append(reward)
         self.history.append(action)
         self.obs_history.append(obs)
 
-        return self.obs(len(self.rewards), self.k), reward, done, info
+        return self.obs(len(self.rewards), self.k), reward, done, _
 
     def reset(self, **kwargs):
         obs = self.env.reset(**kwargs)
@@ -45,6 +44,4 @@ class ClassicControlWrapper(Game):
         self.env.close()
 
     def obs(self, i, k):
-        frames = self.obs_history[i:i + k]
-        obs = torch.tensor(frames, dtype=torch.float32).unsqueeze(0)
-        return obs
+        return self.obs_history[i:i + k]

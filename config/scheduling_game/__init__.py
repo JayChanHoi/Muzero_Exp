@@ -1,8 +1,9 @@
 import gym
 import torch
-from ...core.config import BaseMuZeroConfig, DiscreteSupport
+from core.config import BaseMuZeroConfig, DiscreteSupport
 from .env_wrapper import ClassicControlWrapper
 from .model import MuZeroNet
+
 
 class ClassicControlConfig(BaseMuZeroConfig):
     def __init__(self):
@@ -59,5 +60,6 @@ class ClassicControlConfig(BaseMuZeroConfig):
 
     def scalar_value_loss(self, prediction, target):
         return -(torch.log_softmax(prediction, dim=1) * target).sum(1)
+
 
 muzero_config = ClassicControlConfig()

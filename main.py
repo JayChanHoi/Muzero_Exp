@@ -57,15 +57,7 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-    # import corresponding configuration , neural networks and envs
-    if args.case == 'atari':
-        from config.atari import muzero_config
-    elif args.case == 'box2d':
-        from config.classic_control import muzero_config  # just using same config as classic_control for now
-    elif args.case == 'classic_control':
-        from config.classic_control import muzero_config
-    else:
-        raise Exception('Invalid --case option')
+    from config.classic_control import muzero_config
 
     # set config as per arguments
     exp_path = muzero_config.set_config(args)
