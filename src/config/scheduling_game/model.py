@@ -102,19 +102,7 @@ class StateEncoder(nn.Module):
         self.truck_num = truck_num
 
     def forward(self, input):
-        job_raw_feature_list = []
-        plant_raw_feature_list = []
-        crew_raw_feature_list = []
-        misc_info_raw_feature_list = []
-        for tuple in input:
-            job_raw_feature_list.append(tuple[0])
-            plant_raw_feature_list.append(tuple[1])
-            crew_raw_feature_list.append(tuple[2])
-            misc_info_raw_feature_list.append(tuple[2])
-        job_raw_feature = torch.stack(job_raw_feature_list, dim=0)
-        plant_raw_feature = torch.stack(plant_raw_feature_list, dim=0)
-        crew_raw_feature = torch.stack(crew_raw_feature_list, dim=0)
-        misc_info_raw_feature = torch.stack(misc_info_raw_feature_list, dim=0)
+        job_raw_feature, plant_raw_feature, crew_raw_feature, misc_info_raw_feature = input
 
         encoded_job_rep = self.job_encoder(job_raw_feature.reshape(job_raw_feature.shape[0]*job_raw_feature.shape[1], -1)).view(job_raw_feature.shape[0], job_raw_feature.shape[1], -1)
         encoded_plant_rep = self.plant_encoder(plant_raw_feature.reshape(plant_raw_feature.shape[0]*plant_raw_feature.shape[1], -1)).view(plant_raw_feature.shape[0], plant_raw_feature.shape[1], -1)

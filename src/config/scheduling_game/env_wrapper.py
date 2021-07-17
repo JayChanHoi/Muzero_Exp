@@ -30,7 +30,7 @@ class SchedulingGameWrapper(Game):
         self.history.append(action)
         self.obs_history.append(obs)
 
-        return self.obs(len(self.rewards), self.k), reward, done, _
+        return self.obs(len(self.rewards)), reward, done, _
 
     def reset(self, **kwargs):
         obs = self.env.reset(**kwargs)
@@ -42,10 +42,24 @@ class SchedulingGameWrapper(Game):
         for _ in range(self.k):
             self.obs_history.append(obs)
 
-        return self.obs(0, self.k)
+        return self.obs(0)
 
     def close(self):
         self.env.close()
 
-    def obs(self, i, k):
-        return self.obs_history[i:i + k]
+    def obs(self, i):
+        job_raw_feature_list = []
+        plant_raw_feature_list = []
+        crew_raw_feature_list = []
+        misc_info_raw_feature_list = []
+        for item in self.obs_history[i:i + self.k]:
+            job_raw_feature_list.append(item[0])
+            plant_raw_feature_list.append(item[1])
+            crew_raw_feature_list.append(item[2])
+            misc_info_raw_feature_list.append(item[2])
+        job_raw_feature = np.stack(job_raw_feature_list, axis=0)
+        plant_raw_feature = np.stack(plant_raw_feature_list, axis=0)
+        crew_raw_feature = np.stack(crew_raw_feature_list, axis=0)
+        misc_info_raw_feature = np.stack(misc_info_raw_feature_list, axis=0)
+
+        return tuple([job_raw_feature, plant_raw_feature, crew_raw_feature, misc_info_raw_feature])

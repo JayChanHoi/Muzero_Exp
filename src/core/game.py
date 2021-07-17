@@ -80,7 +80,7 @@ class Game:
     def close(self, *args, **kwargs):
         self.env.close(*args, **kwargs)
 
-    def obs(self, i, k):
+    def obs(self, i):
         raise NotImplementedError
 
     def make_target(self, state_index: int, num_unroll_steps: int, td_steps: int, model=None, config=None):
@@ -96,8 +96,9 @@ class Game:
                     # Reference : Appendix H => Reanalyze
                     # Note : a target network  based on recent parameters is used to provide a fresher,
                     # stable n-step bootstrapped target for the value function
-                    obs = self.obs(bootstrap_index, self.k)
+                    obs = self.obs(bootstrap_index)
                     # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)
                     value = network_output.value.data.cpu().item() * self.discount ** td_steps
             else:
@@ -116,8 +117,9 @@ class Game:
                 # This fresh policy is used as the policy target for 80% of updates during MuZero training
                 if model is not None and np.random.random() <= config.revisit_policy_search_rate:
                     root = Node(0)
-                    obs = self.obs(current_index, self.k)
+                    obs = self.obs(current_index)
                     # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)
                     root.expand(self.to_play(), self.legal_actions(), network_output)
                     MCTS(config).run(root, self.action_history(current_index), model)

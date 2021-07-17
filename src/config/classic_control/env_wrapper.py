@@ -27,7 +27,7 @@ class ClassicControlWrapper(Game):
         self.history.append(action)
         self.obs_history.append(obs)
 
-        return self.obs(len(self.rewards), self.k), reward, done, info
+        return self.obs(len(self.rewards)), reward, done, info
 
     def reset(self, **kwargs):
         obs = self.env.reset(**kwargs)
@@ -39,12 +39,12 @@ class ClassicControlWrapper(Game):
         for _ in range(self.k):
             self.obs_history.append(obs)
 
-        return self.obs(0, self.k)
+        return self.obs(0)
 
     def close(self):
         self.env.close()
 
-    def obs(self, i, k):
-        frames = self.obs_history[i:i + k]
-        obs = torch.tensor(frames, dtype=torch.float32).unsqueeze(0)
-        return obs
+    def obs(self, i):
+        frames = self.obs_history[i:i + self.k]
+        # obs = torch.tensor(frames, dtype=torch.float32).unsqueeze(0)
+        return np.array(frames).flatten()

@@ -665,7 +665,7 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
         )
         # miscellaneous_rep = torch.tensor([0]).to(self.device)
 
-        temp_obs = tuple([job_reps, plant_reps, crew_reps, miscellaneous_rep])
+        temp_obs = tuple([job_reps.numpy(), plant_reps.numpy(), crew_reps.numpy(), miscellaneous_rep.numpy()])
 
         return temp_obs
 
@@ -814,13 +814,13 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
         return max_number_of_trucks_on_road, ot_duration, qty_remain_ratio, truck_on_road_productivity
 
     def get_obs_info(self):
-        job_dim = self.observation[0].shape[2]
-        plant_dim = self.observation[1].shape[2]
-        crew_dim = self.observation[2].shape[2]
-        misc_info_dim = self.observation[3].shape[1]
-        hist_length = self.observation[0].shape[0]
+        job_dim = self.observation[0].shape[1]
+        plant_dim = self.observation[1].shape[1]
+        crew_dim = self.observation[2].shape[1]
+        misc_info_dim = self.observation[3].shape[0]
+        # hist_length = self.observation[0].shape[0]
 
-        return job_dim, plant_dim, crew_dim, misc_info_dim, self.job_num, self.plant_num, self.truck_num, hist_length
+        return job_dim, plant_dim, crew_dim, misc_info_dim, self.job_num, self.plant_num, self.truck_num, None
 
     def get_task_duration(self, selected_job, selected_plant, selected_truck):
         if int(self.crew.crew_coor_tensor[selected_truck, 0].item()) == -1:
