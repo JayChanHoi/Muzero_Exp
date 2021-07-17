@@ -19,7 +19,8 @@ class SchedulingGameWrapper(Game):
         self.truck_num, self.job_num, _ = self.get_obs_info()
 
     def legal_actions(self):
-        return [Action(_) for _ in self.env.get_available_actions().nonzero().squeeze().tolist()]
+        legal_action_list = [0] + self.env.get_available_actions().flatten().nonzero().squeeze().tolist()
+        return [Action(_) for _ in legal_action_list]
 
     def get_obs_info(self):
         return self.env.get_obs_info()
