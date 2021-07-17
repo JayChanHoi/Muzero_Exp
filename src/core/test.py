@@ -17,7 +17,8 @@ def _test(config, model, ep_i, device, render, save_video, save_path, ep_data):
             if render:
                 env.render()
             root = Node(0)
-            obs = torch.FloatTensor(obs).to(device).unsqueeze(0)
+            # obs = torch.FloatTensor(obs).to(device).unsqueeze(0)
+            obs = tuple([torch.FloatTensor(_).to(device).unsqueeze(0) for _ in obs])
             root.expand(env.to_play(), env.legal_actions(), model.initial_inference(obs))
             MCTS(config).run(root, env.action_history(), model)
             action, _ = select_action(root, temperature=1, deterministic=True)

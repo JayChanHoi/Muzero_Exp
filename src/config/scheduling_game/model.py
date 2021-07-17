@@ -101,8 +101,8 @@ class StateEncoder(nn.Module):
         self.plant_num = plant_num
         self.truck_num = truck_num
 
-    def forward(self, input):
-        job_raw_feature, plant_raw_feature, crew_raw_feature, misc_info_raw_feature = input
+    def _single_time_forward(self, single_time_input):
+        job_raw_feature, plant_raw_feature, crew_raw_feature, misc_info_raw_feature = single_time_input
 
         encoded_job_rep = self.job_encoder(job_raw_feature.reshape(job_raw_feature.shape[0]*job_raw_feature.shape[1], -1)).view(job_raw_feature.shape[0], job_raw_feature.shape[1], -1)
         encoded_plant_rep = self.plant_encoder(plant_raw_feature.reshape(plant_raw_feature.shape[0]*plant_raw_feature.shape[1], -1)).view(plant_raw_feature.shape[0], plant_raw_feature.shape[1], -1)
@@ -126,6 +126,22 @@ class StateEncoder(nn.Module):
         )
 
         return encoded_state_rep
+
+    def forward(self, input):
+        job_raw_feature, plant_raw_feature, crew_raw_feature, misc_info_raw_feature = input
+
+        encoded_state_list = []
+        for i in range(self.hist_length):
+            state_encoder_input = [
+                job_raw_feature[:, i, :, :],
+                plant_raw_feature[:, i, :, :],
+                crew_raw_feature[:, i, :, :],
+                misc_info_raw_feature[:, i, :]
+            ]
+            encoded_state_list.append(self._single_time_forward(state_encoder_input))
+        aggregated_encoded_state = torch.cat(encoded_state_list, dim=1)
+
+        return aggregated_encoded_state
 
 class MuZeroNetConcreteSchedulingGame(BaseMuZeroNet):
     def __init__(self,
