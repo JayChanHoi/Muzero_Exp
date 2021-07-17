@@ -15,6 +15,8 @@ class SchedulingGameWrapper(Game):
         self.k = k
         self.frames = deque([], maxlen=k)
         self.env = env
+        self.job_feature_dim, self.plant_feature_dim, self.crew_feature_dim, self.misc_info_feature_dim, self.plant_num, \
+        self.truck_num, self.job_num, _ = self.get_obs_info()
 
     def legal_actions(self):
         return [Action(_) for _ in self.env.get_available_actions().nonzero().squeeze().tolist()]
@@ -22,9 +24,23 @@ class SchedulingGameWrapper(Game):
     def get_obs_info(self):
         return self.env.get_obs_info()
 
-    def step(self, action):
+    def convert_action(self, action, plant_num, truck_num):
+        if action.item() == 0:
+            if_iterate = 1
+            selected_job = -1
+            selected_plant = -1
+            selected_crew = -1
+        else:
+            if_iterate = 0
+            selected_job = (action.item() - 1) // (plant_num * truck_num)
+            selected_plant = (action.item() - 1 - selected_job * (plant_num * truck_num)) // truck_num
+            selected_crew = action.item() - 1 - selected_job * (plant_num * truck_num) - selected_plant * truck_num
 
-        obs, reward, done, _ = self.env.step(action)
+        return selected_job, selected_plant, selected_crew, if_iterate
+
+    def step(self, action):
+        selected_job, selected_plant, selected_crew, if_iterate = self.convert_action(action, self.plant_num, self.truck_num)
+        obs, reward, done, _ = self.env.step((if_iterate, selected_job, selected_plant, selected_crew))
 
         self.rewards.append(reward)
         self.history.append(action)

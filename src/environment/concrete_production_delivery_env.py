@@ -502,7 +502,7 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
         self.job_job_route_distance = self.node_node_route_distance[:-self.plant_num, :-self.plant_num].to(self.device)
         self.job_plant_route_distance = self.node_node_route_distance[:-self.plant_num, -self.plant_num:].to(self.device)
         self.reset_job_order_distribution()
-        self.action_space = spaces.Discrete(self.job_num * self.plant_num * self.truck_num)
+        self.action_space = spaces.Discrete(self.job_num * self.plant_num * self.truck_num + 1)
 
     def _job_qty_distribution_dict_split(self, job_qty_distribution_dict):
         train_sample_indices = np.random.choice(np.arange(job_qty_distribution_dict.__len__()), int(0.7*job_qty_distribution_dict.__len__())).tolist()
