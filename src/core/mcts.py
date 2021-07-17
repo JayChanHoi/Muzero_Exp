@@ -45,7 +45,8 @@ class Node(object):
         self.hidden_state = network_output.hidden_state
         self.reward = network_output.reward
         # softmax over policy logits
-        print(network_output.policy_logits[0, 20])
+        for a in actions:
+            print(math.exp(network_output.policy_logits[0, a.index]))
         policy = {a: math.exp(network_output.policy_logits[0, a.index].item()) for a in actions}
         policy_sum = sum(policy.values())
         for action, p in policy.items():
