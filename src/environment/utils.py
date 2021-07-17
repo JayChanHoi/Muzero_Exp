@@ -6,7 +6,7 @@ import yaml
 from tqdm import tqdm
 
 def extract_info():
-    job_path = os.path.join(os.path.dirname(__file__),'data/wo_delivery_extra_project.xlsx')
+    job_path = os.path.join(os.path.dirname(__file__), 'data/wo_delivery_extra_project.xlsx')
     df = pd.read_excel(job_path)
     df_refine = df[['JOB_NO', 'DELIVERY_DATE', 'ORDER_QTY']]
 
@@ -25,11 +25,11 @@ def extract_info():
                     new_df_data[key].append(sub_df[sub_df['JOB_NO'] == key]['ORDER_QTY'].values[0])
 
     new_df = pd.DataFrame(data=new_df_data)
-    new_df.to_excel(os.path.join(os.path.dirname(__file__),'data/job_qty_distribution.xlsx'), index=False)
+    new_df.to_excel(os.path.join(os.path.dirname(__file__), 'data/job_qty_distribution.xlsx'), index=False)
 
     job_dict = {col:index for index, col in enumerate(new_df.columns) if col != "DELIVERY_DATE"}
 
-    job_name_file_path = os.path.join(os.path.dirname(__file__),'data/job_no_&_job_name.xlsx')
+    job_name_file_path = os.path.join(os.path.dirname(__file__), 'data/job_no_&_job_name.xlsx')
     job_name_df = pd.read_excel(job_name_file_path)
     refine_job_name_dict = {'job_id':[], 'job_name':[]}
     missing_job_id = []
@@ -40,12 +40,12 @@ def extract_info():
             refine_job_name_dict['job_id'].append(job_id)
             refine_job_name_dict['job_name'] += job_name_df[job_name_df['job_id'] == job_id]['job_name'].values.tolist()
     refine_job_name_df = pd.DataFrame(data=refine_job_name_dict)
-    refine_job_name_df.to_excel(os.path.join(os.path.dirname(__file__),'data/target_job_name.xlsx'), index=False)
+    refine_job_name_df.to_excel(os.path.join(os.path.dirname(__file__), 'data/target_job_name.xlsx'), index=False)
 
 def get_route_distance(API_KEY):
     import googlemaps
 
-    job_plant_address_file_path = os.path.join(os.path.dirname(__file__),'data/plant_job_name.xlsx')
+    job_plant_address_file_path = os.path.join(os.path.dirname(__file__), 'data/plant_job_name.xlsx')
     job_plant_address_df = pd.read_excel(job_plant_address_file_path)[['ID','Address']]
     node_to_node_route_distance = np.zeros((len(job_plant_address_df), len(job_plant_address_df)))
     node_to_node_route_duration = np.zeros((len(job_plant_address_df), len(job_plant_address_df)))
@@ -74,15 +74,19 @@ def get_route_distance(API_KEY):
     node_to_node_route_distance_df = pd.DataFrame(node_to_node_route_distance, columns=job_plant_address_df['ID'])
     node_to_node_route_duration_df = pd.DataFrame(node_to_node_route_duration, columns=job_plant_address_df['ID'])
 
-    node_to_node_route_distance_df.to_excel(os.path.join(os.path.dirname(__file__),'data/node_to_node_route_distance.xlsx'), index=False)
-    node_to_node_route_duration_df.to_excel(os.path.join(os.path.dirname(__file__),'data/node_to_node_route_duration.xlsx'), index=False)
+    node_to_node_route_distance_df.to_excel(os.path.join(os.path.dirname(__file__),
+                                                         'data/node_to_node_route_distance.xlsx'), index=False)
+    node_to_node_route_duration_df.to_excel(os.path.join(os.path.dirname(__file__),
+                                                         'data/node_to_node_route_duration.xlsx'), index=False)
 
 
 def data_injection_handler():
-    node_node_route_distance_file_path = os.path.join(os.path.dirname(__file__),'data/node_to_node_route_distance_v2.xlsx')
+    node_node_route_distance_file_path = os.path.join(os.path.dirname(__file__),
+                                                      'data/node_to_node_route_distance_v2.xlsx')
     node_node_route_distance_df = pd.read_excel(node_node_route_distance_file_path)
 
-    job_qty_distribution_file_path = os.path.join(os.path.dirname(__file__),'data/trimmed_job_qty_distribution_v2.xlsx')
+    job_qty_distribution_file_path = os.path.join(os.path.dirname(__file__),
+                                                  'data/trimmed_job_qty_distribution_v2.xlsx')
     job_qty_distribution_df = pd.read_excel(job_qty_distribution_file_path)
 
     job_qty_distribution_dict = {}
