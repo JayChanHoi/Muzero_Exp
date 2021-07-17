@@ -131,7 +131,7 @@ class StateEncoder(nn.Module):
         job_raw_feature, plant_raw_feature, crew_raw_feature, misc_info_raw_feature = input
 
         encoded_state_list = []
-        for i in range(self.hist_length):
+        for i in range(job_raw_feature.shape[1]):
             state_encoder_input = [
                 job_raw_feature[:, i, :, :],
                 plant_raw_feature[:, i, :, :],
