@@ -99,7 +99,7 @@ class StateEncoder(nn.Module):
         )
 
         self.multi_time_fuse_layer = nn.Sequential(
-            nn.Linear((64*(job_num+plant_num)+64*truck_num+64)*5, 512),
+            nn.Linear((64*(job_num+plant_num)+64*truck_num+64)*4, 512),
             nn.ReLU(),
             nn.Linear(512, 256),
             nn.ReLU()
