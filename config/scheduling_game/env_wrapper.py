@@ -14,9 +14,13 @@ class SchedulingGameWrapper(Game):
         super().__init__(env, env.action_space.n, discount, k=k)
         self.k = k
         self.frames = deque([], maxlen=k)
+        self.env = env
 
     def legal_actions(self):
         return [Action(_) for _ in self.env.get_available_actions().nonzero().squeeze().tolist()]
+
+    def get_obs_info(self):
+        return self.env.get_obs_info()
 
     def step(self, action):
 

@@ -1,13 +1,13 @@
 import gym
 import torch
-from core.config import BaseMuZeroConfig, DiscreteSupport
-from .env_wrapper import ClassicControlWrapper
-from .model import MuZeroNet
+from ...core.config import BaseMuZeroConfig, DiscreteSupport
+from env_wrapper import SchedulingGameWrapper
+from .model import MuZeroNetConcreteSchedulingGame
+from ...environment.concrete_production_delivery_env import ConcreteProductionDeliveryEnvV2
 
-
-class ClassicControlConfig(BaseMuZeroConfig):
-    def __init__(self):
-        super(ClassicControlConfig, self).__init__(
+class ScheudlingControlConfig(BaseMuZeroConfig):
+    def __init__(self, env_config_path):
+        super(ScheudlingControlConfig, self).__init__(
             training_steps=20000,
             test_interval=100,
             test_episodes=5,
@@ -18,14 +18,16 @@ class ClassicControlConfig(BaseMuZeroConfig):
             num_simulations=50,
             batch_size=128,
             td_steps=5,
-            num_actors=32,
+            num_actors=16,
             lr_init=0.05,
             lr_decay_rate=0.01,
             lr_decay_steps=10000,
-            window_size=1000,
+            window_size=10000,
             value_loss_coeff=1,
             value_support=DiscreteSupport(-20, 20),
-            reward_support=DiscreteSupport(-5, 5))
+            reward_support=DiscreteSupport(-5, 5),
+        )
+        self.env_config_path = env_config_path
 
     def visit_softmax_temperature_fn(self, num_moves, trained_steps):
         if trained_steps < 0.5 * self.training_steps:
@@ -36,24 +38,31 @@ class ClassicControlConfig(BaseMuZeroConfig):
             return 0.25
 
     def set_game(self, env_name, save_video=False, save_path=None, video_callable=None):
-        self.env_name = env_name
         game = self.new_game()
-        self.obs_shape = game.reset().shape[0]
+        self.job_feature_dim, self.plant_feature_dim, self.crew_feature_dim, self.misc_info_feature_dim, self.plant_num, \
+        self.truck_num, self.job_num, _ = game.get_obs_info()
         self.action_space_size = game.action_space_size
 
     def get_uniform_network(self):
-        return MuZeroNet(self.obs_shape, self.action_space_size, self.reward_support.size, self.value_support.size,
-                         self.inverse_value_transform, self.inverse_reward_transform)
+        return MuZeroNetConcreteSchedulingGame(
+            self.job_feature_dim,
+            self.plant_feature_dim,
+            self.crew_feature_dim,
+            self.misc_info_feature_dim,
+            self.plant_num,
+            self.truck_num,
+            self.job_num,
+            self.action_space_size,
+            self.reward_support.size,
+            self.value_support.size,
+            self.inverse_value_transform,
+            self.inverse_reward_transform
+        )
 
     def new_game(self, seed=None, save_video=False, save_path=None, video_callable=None, uid=None):
-        env = gym.make(self.env_name)
-        if seed is not None:
-            env.seed(seed)
+        env = ConcreteProductionDeliveryEnvV2(self.env_config_path)
 
-        if save_video:
-            from gym.wrappers import Monitor
-            env = Monitor(env, directory=save_path, force=True, video_callable=video_callable, uid=uid)
-        return ClassicControlWrapper(env, discount=self.discount, k=4)
+        return SchedulingGameWrapper(env, discount=self.discount, k=4)
 
     def scalar_reward_loss(self, prediction, target):
         return -(torch.log_softmax(prediction, dim=1) * target).sum(1)
@@ -61,5 +70,3 @@ class ClassicControlConfig(BaseMuZeroConfig):
     def scalar_value_loss(self, prediction, target):
         return -(torch.log_softmax(prediction, dim=1) * target).sum(1)
 
-
-muzero_config = ClassicControlConfig()

@@ -57,7 +57,8 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-    from config.classic_control import muzero_config
+    from config.scheduling_game import ScheudlingControlConfig
+    muzero_config = ScheudlingControlConfig('./environment/env_config_real_data.yml')
 
     # set config as per arguments
     exp_path = muzero_config.set_config(args)

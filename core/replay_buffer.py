@@ -2,7 +2,7 @@ import numpy as np
 import ray
 import torch
 
-@ray.remote
+@ray.remote(num_cpus=1)
 class ReplayBuffer(object):
     """Reference : DISTRIBUTED PRIORITIZED EXPERIENCE REPLAY
     Algo. 1 and Algo. 2 in Page-3 of (https://arxiv.org/pdf/1803.00933.pdf
