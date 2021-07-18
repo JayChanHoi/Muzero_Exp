@@ -1,3 +1,5 @@
+import numpy as np
+
 cpdef object node_expand_action_util(list actions,
                                      object node,
                                      object policy,

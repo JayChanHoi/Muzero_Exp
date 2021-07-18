@@ -1,6 +1,5 @@
 import math
 
-import numpy as np
 import torch
 
 from .cython.mcts_utils import node_expand_action_util, node_add_exploration_noise_util, CyphonNode
