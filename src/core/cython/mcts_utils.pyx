@@ -28,8 +28,11 @@ cdef class CyphonNode():
         self.hidden_state = None
         self.reward = 0
 
-    cpdef bool expanded(self):
-        return len(self.children) > 0
+    cpdef int expanded(self):
+        if len(self.children) > 0:
+            return 1
+        else:
+            return 0
 
     cpdef float value(self):
         if self.visit_count == 0:
@@ -62,4 +65,4 @@ cdef class CyphonNode():
         for a, n in zip(actions, noise):
             self.children[a].prior = self.children[a].prior * (1 - frac) + n * frac
 
-        return 
+        return
