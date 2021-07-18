@@ -16,13 +16,13 @@ cpdef node_add_exploration_noise_util(list actions,
 
 cdef class CyphonNode():
     cpdef __init__(self, float prior):
-        cdef int self.visit_count = 0
-        cdef int self.to_play = -1
-        cdef float self.prior = prior
-        cdef float self.value_sum = 0
-        cdef dict self.children = {}
-        cdef object self.hidden_state = None
-        cdef float self.reward = 0
+        self.visit_count = 0
+        self.to_play = -1
+        self.prior = prior
+        self.value_sum = 0
+        self.children = {}
+        self.hidden_state = None
+        self.reward = 0
 
     cpdef expanded(self):
         return len(self.children) > 0
