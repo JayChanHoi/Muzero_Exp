@@ -19,7 +19,7 @@ cpdef node_add_exploration_noise_util(list actions,
         children[a].prior = children[a].prior * (1 - frac) + n * frac
 
 cdef class CyphonNode():
-    def __init__(self, float prior):
+    def __cinit__(self, float prior):
         self.visit_count = 0
         self.to_play = -1
         self.prior = prior
