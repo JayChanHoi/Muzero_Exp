@@ -46,7 +46,7 @@ cdef class CyphonNode():
         policy_temp_sum = (policy_temp * torch.zeros(policy_temp.shape[0]).scatter(0, torch.LongTensor(actions), 1.)).sum(dim=0)
         policy = policy_temp / policy_temp_sum
         for action in actions:
-            self.children[action] = Node(policy[action])
+            self.children[action] = CyphonNode(policy[action])
 
     cpdef add_exploration_noise(self, float dirichlet_alpha, float exploration_fraction):
         cdef int a
