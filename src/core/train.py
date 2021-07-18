@@ -162,7 +162,7 @@ class DataWorker(object):
                 model.eval()
                 env = self.config.new_game(self.config.seed + self.rank)
 
-                obs = env.reset()
+                obs = env.reset(train=True)
                 done = False
                 priorities = []
                 eps_reward, eps_steps, visit_entropies = 0, 0, 0

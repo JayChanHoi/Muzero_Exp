@@ -13,10 +13,8 @@ def _test(config, model, ep_i, device, render, save_video, save_path, ep_data):
                               video_callable=lambda episode_id: True, uid=ep_i)
         done = False
         ep_reward = 0
-        obs = env.reset()
+        obs = env.reset(train=False)
         while not done:
-            if render:
-                env.render()
             root = CyphonNode(0)
             # obs = torch.FloatTensor(obs).to(device).unsqueeze(0)
             obs = tuple([torch.FloatTensor(_).to(device).unsqueeze(0) for _ in obs])
