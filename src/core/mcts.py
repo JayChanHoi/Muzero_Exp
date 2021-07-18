@@ -45,13 +45,13 @@ class Node(object):
         self.hidden_state = network_output.hidden_state
         self.reward = network_output.reward
         # softmax over policy logits
-        # for a in actions:
-        #     print(a.index)
-        #     print(math.exp(network_output.policy_logits[0, a.index]))
-        policy = {a: math.exp(network_output.policy_logits[0, a.index]) for a in actions}
-        policy_sum = sum(policy.values())
-        for action, p in policy.items():
-            self.children[action] = Node(p / policy_sum)
+        # policy = {a: math.exp(network_output.policy_logits[0, a.index]) for a in actions}
+        # policy_sum = sum(policy.values())
+        policy_temp = network_output.policy_logits.exp().squeeze()
+        policy_temp_sum = (policy_temp * torch.zeros(policy_temp.shape[0]).scatter(0, torch.LongTensor(actions), 1.)).sum(dim=0)
+        policy = policy_temp / policy_temp_sum
+        for action in actions:
+            self.children[action] = Node(policy[action.index])
 
     def add_exploration_noise(self, dirichlet_alpha, exploration_fraction):
         actions = list(self.children.keys())
