@@ -19,10 +19,10 @@ cpdef node_add_exploration_noise_util(list actions,
         children[a].prior = children[a].prior * (1 - frac) + n * frac
 
 cdef class CyphonNode():
-    cpdef public int visit_count, to_play
-    cpdef public float prior, value_sum, reward
-    cpdef public dict children
-    cpdef public object hidden_state
+    cdef public int visit_count
+    cdef public float prior, value_sum, reward
+    cdef public dict children
+    cdef public object hidden_state, to_play
 
     def __init__(self, float prior):
         self.visit_count = 0
@@ -45,7 +45,7 @@ cdef class CyphonNode():
         else:
             return self.value_sum / self.visit_count
 
-    cpdef void expand(self, int to_play, list actions, object network_output):
+    cpdef void expand(self, object to_play, list actions, object network_output):
         cdef int action
 
         self.to_play = to_play
