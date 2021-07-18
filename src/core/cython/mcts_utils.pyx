@@ -45,7 +45,7 @@ cdef class CyphonNode():
         else:
             return self.value_sum / self.visit_count
 
-    cpdef void expand(self, object to_play, list actions, object network_output):
+    cpdef void expand(self, int to_play, list actions, object network_output):
         cdef int action
 
         self.to_play = to_play
