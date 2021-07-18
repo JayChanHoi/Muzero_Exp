@@ -1,5 +1,7 @@
 import numpy as np
 
+import torch
+
 cpdef object node_expand_action_util(list actions,
                                      object node,
                                      object policy,
