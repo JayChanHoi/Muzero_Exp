@@ -22,45 +22,6 @@ class MinMaxStats(object):
         else:
             return value
 
-# class Node(object):
-#     def __init__(self, prior: float):
-#         self.visit_count = 0
-#         self.to_play = -1
-#         self.prior = prior
-#         self.value_sum = 0
-#         self.children = {}
-#         self.hidden_state = None
-#         self.reward = 0
-#
-#     def expanded(self) -> bool:
-#         return len(self.children) > 0
-#
-#     def value(self) -> float:
-#         if self.visit_count == 0:
-#             return 0
-#         else:
-#             return self.value_sum / self.visit_count
-#
-#     def expand(self, to_play, actions, network_output):
-#         self.to_play = to_play
-#         self.hidden_state = network_output.hidden_state
-#         self.reward = network_output.reward
-#         # softmax over policy logits
-#         policy_temp = network_output.policy_logits.exp().squeeze()
-#         policy_temp_sum = (policy_temp * torch.zeros(policy_temp.shape[0]).scatter(0, torch.LongTensor(actions), 1.)).sum(dim=0)
-#         policy = policy_temp / policy_temp_sum
-#         node_expand_action_util(actions, Node, policy, self.children)
-#         # for action in actions:
-#         #     self.children[action] = Node(policy[action])
-#
-#     def add_exploration_noise(self, dirichlet_alpha, exploration_fraction):
-#         actions = list(self.children.keys())
-#         noise = np.random.dirichlet([dirichlet_alpha] * len(actions))
-#         frac = exploration_fraction
-#         node_add_exploration_noise_util(actions, noise, self.children, frac)
-#         # for a, n in zip(actions, noise):
-#         #     self.children[a].prior = self.children[a].prior * (1 - frac) + n * frac
-
 class MCTS(object):
     def __init__(self, config):
         self.config = config
