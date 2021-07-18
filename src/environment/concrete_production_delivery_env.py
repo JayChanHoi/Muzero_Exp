@@ -818,7 +818,6 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
         plant_dim = self.observation[1].shape[1]
         crew_dim = self.observation[2].shape[1]
         misc_info_dim = self.observation[3].shape[0]
-        # hist_length = self.observation[0].shape[0]
 
         return job_dim, plant_dim, crew_dim, misc_info_dim, self.job_num, self.plant_num, self.truck_num, None
 

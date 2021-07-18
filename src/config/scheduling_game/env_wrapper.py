@@ -41,6 +41,7 @@ class SchedulingGameWrapper(Game):
 
     def step(self, action):
         selected_job, selected_plant, selected_crew, if_iterate = self.convert_action(action, self.plant_num, self.truck_num)
+        print(selected_job, selected_plant, selected_crew, if_iterate)
         obs, reward, done, _ = self.env.step((if_iterate, selected_job, selected_plant, selected_crew))
 
         self.rewards.append(reward)
