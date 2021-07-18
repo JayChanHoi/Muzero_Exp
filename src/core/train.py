@@ -145,7 +145,7 @@ class SharedStorage(object):
 
         return reward, eps_lengths, test_score, temperature, visit_entropy
 
-@ray.remote(num_cpus=2)
+@ray.remote(num_cpus=1)
 class DataWorker(object):
     def __init__(self, rank, config, shared_storage, replay_buffer):
         self.rank = rank

@@ -22,7 +22,7 @@ class ScheudlingControlConfig(BaseMuZeroConfig):
             lr_init=0.05,
             lr_decay_rate=0.01,
             lr_decay_steps=10000,
-            window_size=10000,
+            window_size=1000,
             value_loss_coeff=1,
             value_support=DiscreteSupport(-20, 20),
             reward_support=DiscreteSupport(-5, 5),
