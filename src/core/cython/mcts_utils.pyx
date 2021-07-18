@@ -14,7 +14,7 @@ cpdef node_add_exploration_noise_util(list actions,
     for a, n in zip(actions, noise):
         children[a].prior = children[a].prior * (1 - frac) + n * frac
 
-cpdef class CyphonNode():
+cdef class CyphonNode():
     cpdef __init__(self, float prior):
         cdef int self.visit_count = 0
         cdef int self.to_play = -1
