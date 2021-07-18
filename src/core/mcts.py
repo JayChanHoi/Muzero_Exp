@@ -3,6 +3,8 @@ import math
 import numpy as np
 import torch
 
+from .cython.mcts_utils import node_expand_action_util, node_add_exploration_noise_util
+
 class MinMaxStats(object):
     """A class that holds the min-max values of the tree."""
 
@@ -48,15 +50,17 @@ class Node(object):
         policy_temp = network_output.policy_logits.exp().squeeze()
         policy_temp_sum = (policy_temp * torch.zeros(policy_temp.shape[0]).scatter(0, torch.LongTensor(actions), 1.)).sum(dim=0)
         policy = policy_temp / policy_temp_sum
-        for action in actions:
-            self.children[action] = Node(policy[action])
+        node_expand_action_util(actions, Node, policy, self.children)
+        # for action in actions:
+        #     self.children[action] = Node(policy[action])
 
     def add_exploration_noise(self, dirichlet_alpha, exploration_fraction):
         actions = list(self.children.keys())
         noise = np.random.dirichlet([dirichlet_alpha] * len(actions))
         frac = exploration_fraction
-        for a, n in zip(actions, noise):
-            self.children[a].prior = self.children[a].prior * (1 - frac) + n * frac
+        node_add_exploration_noise_util(actions, noise, self.children, frac)
+        # for a, n in zip(actions, noise):
+        #     self.children[a].prior = self.children[a].prior * (1 - frac) + n * frac
 
 class MCTS(object):
     def __init__(self, config):
