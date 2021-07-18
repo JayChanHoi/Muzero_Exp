@@ -5,7 +5,8 @@ import torch
 import torch.optim as optim
 from torch.nn import L1Loss
 
-from .mcts import MCTS, Node
+from .cython.mcts_utils import CyphonNode
+from .mcts import MCTS
 from .replay_buffer import ReplayBuffer
 from .test import test
 from .utils import select_action
@@ -169,7 +170,7 @@ class DataWorker(object):
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
                 while not done and eps_steps <= self.config.max_moves:
-                    root = Node(0)
+                    root = CyphonNode(0)
                     # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
                     obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)

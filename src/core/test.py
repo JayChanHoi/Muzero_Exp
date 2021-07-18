@@ -2,7 +2,8 @@ import os
 
 import torch
 
-from .mcts import MCTS, Node
+from .cython.mcts_utils import CyphonNode
+from .mcts import MCTS
 from .utils import select_action
 import multiprocessing
 
@@ -16,7 +17,7 @@ def _test(config, model, ep_i, device, render, save_video, save_path, ep_data):
         while not done:
             if render:
                 env.render()
-            root = Node(0)
+            root = CyphonNode(0)
             # obs = torch.FloatTensor(obs).to(device).unsqueeze(0)
             obs = tuple([torch.FloatTensor(_).to(device).unsqueeze(0) for _ in obs])
             root.expand(env.to_play(), env.legal_actions(), model.initial_inference(obs))

@@ -3,7 +3,8 @@ from typing import List
 import numpy as np
 import torch
 
-from .mcts import MCTS, Node
+from .mcts import MCTS
+from .cython.mcts_utils import CyphonNode
 
 class Player(object):
     def __init__(self, id=1):
@@ -117,7 +118,7 @@ class Game:
                 # latest model parameters, potentially resulting in a better quality policy than the original search.
                 # This fresh policy is used as the policy target for 80% of updates during MuZero training
                 if model is not None and np.random.random() <= config.revisit_policy_search_rate:
-                    root = Node(0)
+                    root = CyphonNode(0)
                     obs = self.obs(current_index)
                     # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
                     obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
