@@ -70,3 +70,5 @@ class MCTS(object):
             min_max_stats.update(node.value())
 
             value = node.reward + self.config.discount * value
+
+Node = CyphonNode
