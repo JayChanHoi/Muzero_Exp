@@ -24,8 +24,7 @@ cdef class CyphonNode():
     cpdef public dict children
     cpdef public object hidden_state
 
-
-    def __cinit__(self, float prior):
+    def __init__(self, float prior):
         self.visit_count = 0
         self.to_play = -1
         self.prior = prior
