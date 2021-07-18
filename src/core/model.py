@@ -4,12 +4,12 @@ from typing import Dict, List
 import torch
 import torch.nn as nn
 
-from .game import Action
+# from .game import Action
 
 class NetworkOutput(typing.NamedTuple):
     value: float
     reward: float
-    policy_logits: Dict[Action, float]
+    policy_logits: Dict[int, float]
     hidden_state: List[float]
 
 class BaseMuZeroNet(nn.Module):
