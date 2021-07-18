@@ -185,7 +185,7 @@ class DataWorker(object):
                     eps_reward += reward
                     eps_steps += 1
                     visit_entropies += visit_entropy
-                    print('worker step', eps_steps)
+                    # print('worker step', eps_steps)
 
                     if not self.config.use_max_priority:
                         error = L1Loss(reduction='none')(network_output.value,
