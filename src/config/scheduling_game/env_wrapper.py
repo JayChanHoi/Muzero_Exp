@@ -2,7 +2,8 @@ from collections import deque
 
 import numpy as np
 
-from ...core.game import Game, Action
+# from ...core.game import Game, Action
+from ...core.game import Game
 
 class SchedulingGameWrapper(Game):
     def __init__(self, env, k: int, discount: float):
@@ -20,7 +21,8 @@ class SchedulingGameWrapper(Game):
 
     def legal_actions(self):
         legal_action_list = [0] + self.env.get_available_actions().flatten().nonzero().squeeze().tolist()
-        return [Action(_) for _ in legal_action_list]
+        # return [Action(_) for _ in legal_action_list]
+        return legal_action_list
 
     def get_obs_info(self):
         return self.env.get_obs_info()

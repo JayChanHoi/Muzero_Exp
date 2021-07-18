@@ -16,19 +16,19 @@ class Player(object):
 
         return self.id == other.id
 
-class Action(object):
-
-    def __init__(self, index: int):
-        self.index = index
-
-    def __hash__(self):
-        return self.index
-
-    def __eq__(self, other):
-        return self.index == other.index
-
-    def __gt__(self, other):
-        return self.index > other.index
+# class Action(object):
+#
+#     def __init__(self, index: int):
+#         self.index = index
+#
+#     def __hash__(self):
+#         return self.index
+#
+#     def __eq__(self, other):
+#         return self.index == other.index
+#
+#     def __gt__(self, other):
+#         return self.index > other.index
 
 class ActionHistory(object):
     """Simple history container used inside the search.
@@ -36,21 +36,22 @@ class ActionHistory(object):
     Only used to keep track of the actions executed.
     """
 
-    def __init__(self, history: List[Action], action_space_size: int):
+    # def __init__(self, history: List[Action], action_space_size: int):
+    def __init__(self, history: List, action_space_size: int):
         self.history = list(history)
         self.action_space_size = action_space_size
 
     def clone(self):
         return ActionHistory(self.history, self.action_space_size)
 
-    def add_action(self, action: Action):
+    def add_action(self, action):
         self.history.append(action)
 
-    def last_action(self) -> Action:
+    def last_action(self):
         return self.history[-1]
 
-    def action_space(self) -> List[Action]:
-        return [Action(i) for i in range(self.action_space_size)]
+    def action_space(self) -> List:
+        return [i for i in range(self.action_space_size)]
 
     def to_play(self) -> Player:
         return Player()
@@ -144,7 +145,7 @@ class Game:
 
     def store_search_stats(self, root, idx: int = None):
         sum_visits = sum(child.visit_count for child in root.children.values())
-        action_space = (Action(index) for index in range(self.action_space_size))
+        action_space = (index for index in range(self.action_space_size))
         if idx is None:
             self.child_visits.append([root.children[a].visit_count / sum_visits if a in root.children else 0
                                       for a in action_space])

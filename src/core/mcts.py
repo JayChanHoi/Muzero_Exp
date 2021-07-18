@@ -46,10 +46,10 @@ class Node(object):
         self.reward = network_output.reward
         # softmax over policy logits
         policy_temp = network_output.policy_logits.exp().squeeze()
-        policy_temp_sum = (policy_temp * torch.zeros(policy_temp.shape[0]).scatter(0, torch.LongTensor([action.index for action in actions]), 1.)).sum(dim=0)
+        policy_temp_sum = (policy_temp * torch.zeros(policy_temp.shape[0]).scatter(0, torch.LongTensor(actions), 1.)).sum(dim=0)
         policy = policy_temp / policy_temp_sum
         for action in actions:
-            self.children[action] = Node(policy[action.index])
+            self.children[action] = Node(policy[action])
 
     def add_exploration_noise(self, dirichlet_alpha, exploration_fraction):
         actions = list(self.children.keys())
