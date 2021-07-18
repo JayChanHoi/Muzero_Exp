@@ -80,7 +80,7 @@ class MCTS(object):
             parent = search_path[-2]
             network_output = model.recurrent_inference(
                 parent.hidden_state,
-                torch.tensor([[history.last_action().index]],device=parent.hidden_state.device)
+                torch.tensor([[history.last_action()]],device=parent.hidden_state.device)
             )
             node.expand(history.to_play(), history.action_space(), network_output)
 
