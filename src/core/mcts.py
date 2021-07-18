@@ -2,6 +2,8 @@ import math
 
 import torch
 
+from .cython_func.mcts_utils import CyphonNode
+
 class MinMaxStats(object):
     """A class that holds the min-max values of the tree."""
 
