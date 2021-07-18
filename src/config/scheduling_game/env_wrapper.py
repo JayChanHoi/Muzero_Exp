@@ -51,8 +51,11 @@ class SchedulingGameWrapper(Game):
 
         return self.obs(len(self.rewards)), reward, done, _
 
-    def reset(self, **kwargs):
-        obs = self.env.reset(**kwargs)
+    def reset(self, train=False):
+        if train:
+            obs = self.env.reset_job_order_distribution(train)
+        else:
+            obs = self.env.reset()
 
         self.rewards = []
         self.history = []
