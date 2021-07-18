@@ -178,7 +178,7 @@ class DataWorker(object):
                                                exploration_fraction=self.config.root_exploration_fraction)
                     MCTS(self.config).run(root, env.action_history(), model)
                     action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
-                    obs, reward, done, info = env.step(action.index)
+                    obs, reward, done, _ = env.step(action.index)
                     env.store_search_stats(root)
 
                     eps_reward += reward

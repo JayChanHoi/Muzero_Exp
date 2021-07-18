@@ -15,7 +15,7 @@ class ScheudlingControlConfig(BaseMuZeroConfig):
             max_moves=100,
             discount=0.997,
             dirichlet_alpha=0.25,
-            num_simulations=25,
+            num_simulations=10,
             batch_size=128,
             td_steps=5,
             num_actors=16,
