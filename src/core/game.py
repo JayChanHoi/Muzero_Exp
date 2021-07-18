@@ -4,7 +4,7 @@ import numpy as np
 import torch
 
 from .mcts import MCTS
-from .cython.mcts_utils import CyphonNode
+from cython.mcts_utils import CyphonNode
 
 class Player(object):
     def __init__(self, id=1):
