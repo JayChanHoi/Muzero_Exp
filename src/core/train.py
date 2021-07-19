@@ -342,5 +342,6 @@ def train(config, summary_writer=None):
     return config.get_uniform_network().set_weights(ray.get(storage.get_weights.remote()))
 
 if __name__ == "__main__":
-    print('test')
-    # root = CyphonNode(0)
+
+    root = CyphonNode(0)
+    print('test train.py succeed')
