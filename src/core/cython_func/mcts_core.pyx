@@ -82,23 +82,17 @@ cdef class MinMaxStats(object):
             return value
 
 cdef class MCTS(object):
-    cdef public float pb_c_base
-    cdef public float pb_c_init
-    cdef public float discount
-    cdef public int num_simulations
+    cdef public object config
 
-    def __init__(self, float pb_c_base, float pb_c_init, float discount, int num_simulations):
-        self.pb_c_base = pb_c_base
-        self.pb_c_init = pb_c_init
-        self.discount = discount
-        self.num_simulations = num_simulations
+    def __init__(self, object config):
+        self.config = config
 
     cpdef void run(self, object root, object action_history, object model):
         cdef object min_max_stats = MinMaxStats()
         cdef int i
         cdef int j
 
-        for i in range(self.num_simulations):
+        for i in range(self.config.num_simulations):
             history = action_history.clone()
             node = root
             search_path = [node]
@@ -143,7 +137,7 @@ cdef class MCTS(object):
         return max_action, max_child
 
     cpdef float ucb_score(self, object parent, object child, object min_max_stats):
-        pb_c = math.log((parent.visit_count + self.pb_c_base + 1) / self.pb_c_base) + self.pb_c_init
+        pb_c = math.log((parent.visit_count + self.config.pb_c_base + 1) / self.config.pb_c_base) + self.config.pb_c_init
         pb_c *= math.sqrt(parent.visit_count) / (child.visit_count + 1)
 
         prior_score = pb_c * child.prior
