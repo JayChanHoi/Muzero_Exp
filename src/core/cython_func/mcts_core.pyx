@@ -17,6 +17,7 @@ cdef class MinMaxStats(object):
     cpdef void update(self, float value):
         self.maximum = max(self.maximum, value)
         self.minimum = min(self.minimum, value)
+
         return
 
     cpdef float normalize(self, float value):
