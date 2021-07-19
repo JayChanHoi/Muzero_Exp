@@ -1,3 +1,6 @@
+#!python
+# cython: embedsignature=True, binding=True
+
 from itertools import count
 import math
 
