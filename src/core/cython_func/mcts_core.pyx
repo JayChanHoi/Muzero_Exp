@@ -14,12 +14,12 @@ cdef class MinMaxStats(object):
         self.maximum = min_value_bound if min_value_bound else -float('inf')
         self.minimum = max_value_bound if max_value_bound else float('inf')
 
-    cpdef void update(self, value float):
+    cpdef void update(self, float value):
         self.maximum = max(self.maximum, value)
         self.minimum = min(self.minimum, value)
         return
 
-    cpdef float normalize(self, value float):
+    cpdef float normalize(self, float value):
         if self.maximum > self.minimum:
             # We normalize only when we have set the maximum and minimum values.
             return (value - self.minimum) / (self.maximum - self.minimum)
