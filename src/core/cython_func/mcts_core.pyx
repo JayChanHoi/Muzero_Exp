@@ -10,9 +10,9 @@ cdef class MinMaxStats(object):
     cdef public float maximum
     cdef public float minimum
 
-    def __init__(self, float min_value_bound=None, float max_value_bound=None):
-        self.maximum = min_value_bound if min_value_bound else -float('inf')
-        self.minimum = max_value_bound if max_value_bound else float('inf')
+    def __init__(self, float min_value_bound=0, float max_value_bound=0):
+        self.maximum = min_value_bound if min_value_bound != 0 else -float('inf')
+        self.minimum = max_value_bound if max_value_bound != 0 else float('inf')
 
     cpdef void update(self, float value):
         self.maximum = max(self.maximum, value)
