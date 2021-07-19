@@ -5,8 +5,8 @@ import torch
 import torch.optim as optim
 from torch.nn import L1Loss
 
-import cython_func.mcts_core.CyphonNode
-import cython_func.mcts_core.MCTS
+from .cython_func.mcts_core import CyphonNode
+from .cython_func.mcts_core import MCTS
 # from .cython_func.mcts_core import CyphonNode
 # from .mcts import MCTS
 from .replay_buffer import ReplayBuffer

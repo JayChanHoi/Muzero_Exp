@@ -3,8 +3,8 @@ from typing import List
 import numpy as np
 import torch
 
-import cython_func.mcts_core.CyphonNode
-import cython_func.mcts_core.MCTS
+from .cython_func.mcts_core import CyphonNode
+from .cython_func.mcts_core import MCTS
 # from .mcts import MCTS
 
 class Player(object):
