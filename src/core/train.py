@@ -6,7 +6,6 @@ import torch.optim as optim
 from torch.nn import L1Loss
 
 from .cython_func.mcts import CyphonNode, MCTS
-# from .mcts import MCTS
 from .replay_buffer import ReplayBuffer
 from .test import test
 from .utils import select_action
