@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 import torch
 
-from .cython_func.mcts import CyphonNode, MCTS
+from .cython_func.mcts_core import CyphonNode, MCTS
 
 class Player(object):
     def __init__(self, id=1):
