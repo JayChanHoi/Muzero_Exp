@@ -23,6 +23,7 @@ if __name__ == '__main__':
     parser.add_argument('--opr', required=True, choices=['train', 'test'])
     parser.add_argument('--no_cuda', action='store_true', default=False,
                         help='no cuda usage (default: %(default)s)')
+    parser.add_argument('--resume', default=None, help='checkpoint path for resume')
     parser.add_argument('--debug', action='store_true', default=False,
                         help='If enabled, logs additional values  '
                              '(gradients, target value, reward distribution, etc.) (default: %(default)s)')
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     try:
         if args.opr == 'train':
             summary_writer = SummaryWriter(exp_path, flush_secs=10)
-            train(muzero_config, summary_writer)
+            train(muzero_config, summary_writer, args.resume)
 
         elif args.opr == 'test':
             assert os.path.exists(muzero_config.model_path), 'model not found at {}'.format(muzero_config.model_path)

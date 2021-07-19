@@ -284,8 +284,15 @@ def adjust_lr(config, optimizer, step_count):
         param_group['lr'] = lr
     return lr
 
-def _train(config, shared_storage, replay_buffer, summary_writer):
+def _train(config, shared_storage, replay_buffer, summary_writer, resume):
     model = config.get_uniform_network().to(config.device)
+    if resume:
+        print('=> loading checkpoint : "{}"'.format(resume))
+        if str(config.device) == 'cpu':
+            model.load_state_dict(torch.load(resume, map_location=torch.device('cpu'))['state_dict'])
+        else:
+            model.load_state_dict(torch.load(resume)['state_dict'])
+
     model.train()
     optimizer = optim.SGD(model.parameters(), lr=config.lr_init, momentum=config.momentum,
                           weight_decay=config.weight_decay)
@@ -334,7 +341,7 @@ def _test(config, shared_storage):
         shared_storage.add_test_log.remote(test_score)
         time.sleep(30)
 
-def train(config, summary_writer=None):
+def train(config, summary_writer=None, resume=None):
     storage = SharedStorage.remote(config.get_uniform_network())
     replay_buffer = ReplayBuffer.remote(batch_size=config.batch_size, capacity=config.window_size,
                                         prob_alpha=config.priority_prob_alpha)
@@ -342,7 +349,7 @@ def train(config, summary_writer=None):
     for worker in workers:
         worker.run.remote()
     workers += [_test.remote(config, storage)]
-    _train(config, storage, replay_buffer, summary_writer)
+    _train(config, storage, replay_buffer, summary_writer, resume)
     ray.wait(workers, len(workers))
 
     return config.get_uniform_network().set_weights(ray.get(storage.get_weights.remote()))
