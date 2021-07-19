@@ -5,7 +5,7 @@ import numpy as np
 
 import torch
 
-from .mcts_utils import MinMaxStats
+from mcts_utils import MinMaxStats
 
 cdef class CyphonNode(object):
     cdef public int visit_count
