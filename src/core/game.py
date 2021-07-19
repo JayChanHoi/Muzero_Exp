@@ -4,7 +4,6 @@ import numpy as np
 import torch
 
 from .cython_func.mcts_core import CyphonNode
-# from .cython_func.mcts_core import MCTS
 from .mcts import MCTS
 # from .cython_func.mcts import MCTS
 
