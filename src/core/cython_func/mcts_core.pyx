@@ -19,7 +19,7 @@ cdef class MinMaxStats(object):
         self.minimum = min(self.minimum, value)
         return
 
-    def float normalize(self, value float):
+    cpdef float normalize(self, value float):
         if self.maximum > self.minimum:
             # We normalize only when we have set the maximum and minimum values.
             return (value - self.minimum) / (self.maximum - self.minimum)
