@@ -20,7 +20,7 @@ class SchedulingGameWrapper(Game):
         self.plant_num, self.truck_num, _ = self.get_obs_info()
 
     def legal_actions(self):
-        legal_action_list = [0] + self.env.get_available_actions().flatten().nonzero().squeeze().tolist()
+        legal_action_list = np.concatenate([np.ones(1), self.env.get_available_actions().flatten().numpy()], axis=0).nonzero()[0].tolist()
         # return [Action(_) for _ in legal_action_list]
         return legal_action_list
 
