@@ -1,4 +1,4 @@
-from mcts_core import CyphonNode, MCTS
+from .mcts_core import CyphonNode, MCTS
 
 CyphonNode = CyphonNode
 MCTS = MCTS
