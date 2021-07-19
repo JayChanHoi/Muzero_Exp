@@ -7,5 +7,3 @@ setup(
     name='cython_func/mcts_core',
     ext_modules=cythonize("mcts_core.pyx")
 )
-
-
