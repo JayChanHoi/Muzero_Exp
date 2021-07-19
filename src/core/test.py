@@ -2,7 +2,8 @@ import os
 
 import torch
 
-from .cython_func.mcts_core import MCTS, CyphonNode
+from .cython_func.mcts_core import CyphonNode
+from .mcts import MCTS
 from .utils import select_action
 import multiprocessing
 

@@ -3,7 +3,8 @@ from typing import List
 import numpy as np
 import torch
 
-from .cython_func.mcts_core import CyphonNode, MCTS
+from .cython_func.mcts_core import CyphonNode
+from .mcts import MCTS
 
 class Player(object):
     def __init__(self, id=1):
@@ -15,20 +16,6 @@ class Player(object):
             return NotImplemented
 
         return self.id == other.id
-
-# class Action(object):
-#
-#     def __init__(self, index: int):
-#         self.index = index
-#
-#     def __hash__(self):
-#         return self.index
-#
-#     def __eq__(self, other):
-#         return self.index == other.index
-#
-#     def __gt__(self, other):
-#         return self.index > other.index
 
 class ActionHistory(object):
     """Simple history container used inside the search.
