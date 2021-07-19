@@ -5,8 +5,8 @@ setup(
     name='mcts_core',
     ext_modules=cythonize("mcts_core.pyx")
 )
-
-setup(
-    name='mcts',
-    ext_modules=cythonize("mcts.pyx")
-)
+#
+# setup(
+#     name='mcts',
+#     ext_modules=cythonize("mcts.pyx")
+# )
