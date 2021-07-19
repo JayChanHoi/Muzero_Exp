@@ -5,8 +5,8 @@ import torch
 
 from .cython_func.mcts_core import CyphonNode
 # from .cython_func.mcts_core import MCTS
-# from .mcts import MCTS
-from .cython_func.mcts import MCTS
+from .mcts import MCTS
+# from .cython_func.mcts import MCTS
 
 class Player(object):
     def __init__(self, id=1):
