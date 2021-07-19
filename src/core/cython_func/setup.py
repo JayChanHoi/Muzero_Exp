@@ -3,5 +3,5 @@ from Cython.Build import cythonize
 
 setup(
     name='mcts_core',
-    ext_modules=cythonize("mcts.pyx")
+    ext_modules=cythonize("mcts_core.pyx")
 )
