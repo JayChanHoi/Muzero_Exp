@@ -179,7 +179,12 @@ class DataWorker(object):
                     root.expand(env.to_play(), env.legal_actions(), network_output)
                     root.add_exploration_noise(dirichlet_alpha=self.config.root_dirichlet_alpha,
                                                exploration_fraction=self.config.root_exploration_fraction)
-                    MCTS(self.config).run(root, env.action_history(), model)
+                    # MCTS(self.config).run(root, env.action_history(), model)
+                    MCTS(self.config.pb_c_base, self.config.pb_c_init, self.config.discount, self.config.num_simulations).run(
+                        root,
+                        env.action_history(),
+                        model
+                    )
                     action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
                     obs, reward, done, _ = env.step(action)
                     env.store_search_stats(root)

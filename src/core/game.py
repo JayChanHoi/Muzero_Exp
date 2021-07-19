@@ -112,7 +112,12 @@ class Game:
                     obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)
                     root.expand(self.to_play(), self.legal_actions(), network_output)
-                    MCTS(config).run(root, self.action_history(current_index), model)
+                    # MCTS(config).run(root, self.action_history(current_index), model)
+                    MCTS(config.pb_c_base, config.pb_c_init, config.discount, config.num_simulations).run(
+                        root,
+                        self.action_history(current_index),
+                        model
+                    )
                     self.store_search_stats(root, current_index)
 
                 target_policies.append(self.child_visits[current_index])
