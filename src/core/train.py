@@ -147,6 +147,30 @@ class SharedStorage(object):
 
         return reward, eps_lengths, test_score, temperature, visit_entropy
 
+def data_worker_run(init_obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities, env, model, config):
+    obs = init_obs
+    while not done and eps_steps <= config.max_moves:
+        root = CyphonNode(0)
+        # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+        obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
+        network_output = model.initial_inference(obs)
+        root.expand(env.to_play(), env.legal_actions(), network_output)
+        root.add_exploration_noise(dirichlet_alpha=config.root_dirichlet_alpha,
+                                   exploration_fraction=config.root_exploration_fraction)
+        MCTS(config).run(root, env.action_history(), model)
+        action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
+        obs, reward, done, _ = env.step(action)
+        env.store_search_stats(root)
+
+        eps_reward += reward
+        eps_steps += 1
+        visit_entropies += visit_entropy
+
+        if not config.use_max_priority:
+            error = L1Loss(reduction='none')(network_output.value,
+                                             torch.tensor([[root.value()]])).item()
+            priorities.append(error + 1e-5)
+
 @ray.remote(num_cpus=1)
 class DataWorker(object):
     def __init__(self, rank, config, shared_storage, replay_buffer):
@@ -170,33 +194,31 @@ class DataWorker(object):
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
-                while not done and eps_steps <= self.config.max_moves:
-                    root = CyphonNode(0)
-                    # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-                    obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
-                    network_output = model.initial_inference(obs)
-                    root.expand(env.to_play(), env.legal_actions(), network_output)
-                    root.add_exploration_noise(dirichlet_alpha=self.config.root_dirichlet_alpha,
-                                               exploration_fraction=self.config.root_exploration_fraction)
-                    MCTS(self.config).run(root, env.action_history(), model)
-                    # MCTS(self.config.pb_c_base, self.config.pb_c_init, self.config.discount, self.config.num_simulations).run(
-                    #     root,
-                    #     env.action_history(),
-                    #     model
-                    # )
-                    action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
-                    obs, reward, done, _ = env.step(action)
-                    env.store_search_stats(root)
 
-                    eps_reward += reward
-                    eps_steps += 1
-                    visit_entropies += visit_entropy
-                    # print('worker step', eps_steps)
-
-                    if not self.config.use_max_priority:
-                        error = L1Loss(reduction='none')(network_output.value,
-                                                         torch.tensor([[root.value()]])).item()
-                        priorities.append(error + 1e-5)
+                data_worker_run(obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities,
+                                env, model, self.config)
+                # while not done and eps_steps <= self.config.max_moves:
+                #     root = CyphonNode(0)
+                #     # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                #     obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
+                #     network_output = model.initial_inference(obs)
+                #     root.expand(env.to_play(), env.legal_actions(), network_output)
+                #     root.add_exploration_noise(dirichlet_alpha=self.config.root_dirichlet_alpha,
+                #                                exploration_fraction=self.config.root_exploration_fraction)
+                #     MCTS(self.config).run(root, env.action_history(), model)
+                #     action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
+                #     obs, reward, done, _ = env.step(action)
+                #     env.store_search_stats(root)
+                #
+                #     eps_reward += reward
+                #     eps_steps += 1
+                #     visit_entropies += visit_entropy
+                #     # print('worker step', eps_steps)
+                #
+                #     if not self.config.use_max_priority:
+                #         error = L1Loss(reduction='none')(network_output.value,
+                #                                          torch.tensor([[root.value()]])).item()
+                #         priorities.append(error + 1e-5)
 
                 env.close()
                 self.replay_buffer.save_game.remote(env,
