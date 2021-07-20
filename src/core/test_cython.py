@@ -1,4 +1,4 @@
-from .cython_func.mcts_core import CyphonNode
+from .cython_func import CyphonNode, MCTS
 
 if __name__ == "__main__":
     root = CyphonNode(0)
