@@ -7,10 +7,10 @@ import ray
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from src.core.test import test
-from src.core.train import train
-from src.core.utils import init_logger, make_results_dir
-from src.config.scheduling_game import ScheudlingControlConfig
+from .core.test import test
+from .core.train import train
+from .core.utils import init_logger, make_results_dir
+from .config.scheduling_game import ScheudlingControlConfig
 
 if __name__ == '__main__':
     # Lets gather arguments
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-    muzero_config = ScheudlingControlConfig('./src/environment/env_config_real_data.yml')
+    muzero_config = ScheudlingControlConfig('environment/env_config_real_data.yml')
 
     # set config as per arguments
     exp_path = muzero_config.set_config(args)
