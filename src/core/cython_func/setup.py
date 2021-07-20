@@ -1,14 +1,12 @@
 from distutils.core import setup
+from distutils.extension import Extension
 from Cython.Build import cythonize
-# from distutils.extension import Extension
-# from Cython.Distutils import build_ext
+
+extensions = [
+    Extension("cython_func/mcts_core",["cython_func/mcts_core.pyx"]),
+    Extension("cython_func/mcts",["cython_func/mcts.pyx"])
+]
 
 setup(
-    name='./cython_func/mcts_core',
-    ext_modules=cythonize("mcts_core.pyx")
-)
-
-setup(
-    name='./cython_func/mcts',
-    ext_modules=cythonize("mcts.pyx")
+    ext_modules=cythonize(extensions)
 )
