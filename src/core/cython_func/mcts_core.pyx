@@ -61,7 +61,7 @@ cdef class MCTS(object):
         max_action = action_list[max_candidate_index]
         max_child = child_list[max_candidate_index]
 
-        return max_action, max_child
+        return [max_action, max_child]
 
     cpdef float ucb_score(self, object parent, object child, object min_max_stats):
         pb_c = math.log((parent.visit_count + self.config.pb_c_base + 1) / self.config.pb_c_base) + self.config.pb_c_init
