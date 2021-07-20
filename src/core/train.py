@@ -181,29 +181,33 @@ class DataWorker(object):
 
     def run(self):
         model = self.config.get_uniform_network()
+        env = self.config.new_game(self.config.seed + self.rank)
+        obs = env.reset(train=True)
         with torch.no_grad():
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
                 model.eval()
-                env = self.config.new_game(self.config.seed + self.rank)
-
-                obs = env.reset(train=True)
                 done = False
                 priorities = []
                 eps_reward, eps_steps, visit_entropies = 0, 0, 0
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
-
                 data_worker_single_play(obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities,
                                         env, model, self.config)
 
-                env.close()
+                if done:
+                    env.close()
+
                 self.replay_buffer.save_game.remote(env,
                                                     priorities=None if self.config.use_max_priority else priorities)
                 # Todo: refactor with env attributes to reduce variables
                 visit_entropies /= eps_steps
                 self.shared_storage.set_data_worker_logs.remote(eps_steps, eps_reward, _temperature, visit_entropies)
+
+                if done:
+                    env = self.config.new_game(self.config.seed + self.rank)
+                    obs = env.reset(train=True)
 
 def update_weights(model, target_model, optimizer, replay_buffer, config):
     batch = ray.get(replay_buffer.sample_batch.remote(config.num_unroll_steps, config.td_steps,
