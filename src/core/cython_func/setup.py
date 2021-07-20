@@ -4,5 +4,6 @@ from Cython.Build import cythonize
 # from Cython.Distutils import build_ext
 
 setup(
-    ext_modules=cythonize("mcts_core.pyx")
+    name='cython_func/mcts',
+    ext_modules=cythonize("mcts.pyx")
 )
