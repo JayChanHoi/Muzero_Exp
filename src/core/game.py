@@ -4,8 +4,6 @@ import numpy as np
 import torch
 
 from .cython_func import CyphonNode, MCTS
-# from .cython_func import MCTS
-# from .mcts import MCTS
 
 class Player(object):
     def __init__(self, id=1):

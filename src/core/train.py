@@ -6,8 +6,6 @@ import torch.optim as optim
 from torch.nn import L1Loss
 
 from .cython_func import CyphonNode, MCTS
-# from .cython_func.mcts import MCTS
-# from .mcts import MCTS
 from .replay_buffer import ReplayBuffer
 from .test import test
 from .utils import select_action
@@ -170,6 +168,8 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
             error = L1Loss(reduction='none')(network_output.value,
                                              torch.tensor([[root.value()]])).item()
             priorities.append(error + 1e-5)
+
+        print('worker run step', eps_steps)
 
 @ray.remote(num_cpus=1)
 class DataWorker(object):
