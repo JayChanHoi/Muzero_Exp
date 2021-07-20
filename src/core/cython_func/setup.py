@@ -3,8 +3,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 extensions = [
-    Extension("cython_func/mcts_core",["mcts_core.pyx"]),
-    Extension("cython_func/mcts",["mcts.pyx"])
+    Extension("cython_func/mcts_core",["mcts_core.pyx"])
 ]
 
 setup(
