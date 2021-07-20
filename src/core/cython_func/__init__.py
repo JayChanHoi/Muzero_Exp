@@ -1,1 +1,1 @@
-from .mcts import CyphonNode, MCTS
+from .mcts_main import CyphonNode, MCTS

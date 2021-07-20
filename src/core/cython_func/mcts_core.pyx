@@ -1,5 +1,4 @@
 include "mcts_minmax.pyx"
-include "mcts_node.pyx"
 
 from itertools import count
 import math
