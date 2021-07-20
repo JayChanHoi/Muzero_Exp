@@ -183,11 +183,11 @@ class DataWorker(object):
         model = self.config.get_uniform_network()
         env = self.config.new_game(self.config.seed + self.rank)
         obs = env.reset(train=True)
+        done = False
         with torch.no_grad():
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
                 model.eval()
-                done = False
                 priorities = []
                 eps_reward, eps_steps, visit_entropies = 0, 0, 0
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
@@ -208,6 +208,7 @@ class DataWorker(object):
                 if done:
                     env = self.config.new_game(self.config.seed + self.rank)
                     obs = env.reset(train=True)
+                    done = False
 
 def update_weights(model, target_model, optimizer, replay_buffer, config):
     batch = ray.get(replay_buffer.sample_batch.remote(config.num_unroll_steps, config.td_steps,
