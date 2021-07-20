@@ -25,10 +25,12 @@ cdef class MCTS(object):
             search_path = [node]
 
             for j in count():
-                if node.expanded():
-                    action, node = self.select_child(node, min_max_stats)
-                    history.add_action(action)
-                    search_path.append(node)
+                if not node.expanded():
+                    break
+
+                action, node = self.select_child(node, min_max_stats)
+                history.add_action(action)
+                search_path.append(node)
 
             # Inside the search tree we use the dynamics function to obtain the next
             # hidden state given an action and the previous hidden state.
