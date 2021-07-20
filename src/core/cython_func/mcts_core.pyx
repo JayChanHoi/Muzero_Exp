@@ -48,7 +48,7 @@ cdef class MCTS(object):
         cdef int action
         cdef object child
         cdef list action_list = [0 for _ in range(len(node.children))]
-        cdef list ucb_score_list = [-100 for _ in range(len(node.children))]
+        cdef list ucb_score_list = [0 for _ in range(len(node.children))]
         cdef list child_list = [CyphonNode(0) for _ in range(len(node.children))]
 
         for i, (action, child) in enumerate(node.children.items()):
