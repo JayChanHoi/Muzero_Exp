@@ -48,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_episodes', type=int, default=10,
                         help='Evaluation episode count (default: %(default)s)')
 
-    ray.init(num_cpus=int(16 * 1.0) + 5, num_gpus=2)
+    ray.init(num_cpus=int(20 * 1.0) + 5, num_gpus=2)
     # Process arguments
     args = parser.parse_args()
     args.device = 'cuda' if (not args.no_cuda) and torch.cuda.is_available() else 'cpu'
