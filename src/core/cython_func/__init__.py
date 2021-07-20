@@ -1,1 +1,1 @@
-from .mcts_main import CyphonNode, MCTS
+from Muzero_scheduling_game.src.core.cython_func.main import CyphonNode, MCTS
