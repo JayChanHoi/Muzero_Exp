@@ -21,7 +21,7 @@ class SchedulingGameWrapper(Game):
 
     def legal_actions(self):
         # legal_action_list = np.concatenate([np.ones(1), self.env.get_available_actions().flatten().numpy()], axis=0).nonzero()[0].tolist()
-        legal_action_list = np.ones(self.env.action_space).nonzero()[0].tolist()
+        legal_action_list = np.ones(self.env.action_space.n).nonzero()[0].tolist()
         return legal_action_list
 
     def get_obs_info(self):
