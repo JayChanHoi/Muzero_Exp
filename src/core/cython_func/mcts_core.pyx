@@ -47,9 +47,9 @@ cdef class MCTS(object):
         cdef int i
         cdef int action
         cdef object child
-        cdef list action_list = [0 for _ in range(100)]
-        cdef list ucb_score_list = [0. for _ in range(100)]
-        cdef list child_list = [CyphonNode(0) for _ in range(100)]
+        cdef list action_list = [0 for _ in range(20000)]
+        cdef list ucb_score_list = [0. for _ in range(20000)]
+        cdef list child_list = [CyphonNode(0) for _ in range(20000)]
 
         for i, (action, child) in enumerate(node.children.items()):
             ucb_score = self.ucb_score(node, child, min_max_stats)
