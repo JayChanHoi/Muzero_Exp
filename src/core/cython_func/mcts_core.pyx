@@ -82,6 +82,6 @@ cdef class MCTS(object):
             node.visit_count += 1
             min_max_stats.update(node.value())
 
-            value = node.reward + self.discount * value
+            value = node.reward + self.config.discount * value
 
         return
