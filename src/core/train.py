@@ -169,7 +169,8 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
                                              torch.tensor([[root.value()]])).item()
             priorities.append(error + 1e-5)
 
-        print('worker run step', eps_steps)
+    return env, eps_steps
+
 
 @ray.remote(num_cpus=1)
 class DataWorker(object):
@@ -193,7 +194,7 @@ class DataWorker(object):
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
-                data_worker_single_play(obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities,
+                env, eps_steps = data_worker_single_play(obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities,
                                         env, model, self.config)
 
                 if done:
