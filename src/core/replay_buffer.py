@@ -76,7 +76,7 @@ class ReplayBuffer(object):
         # batch_crew_raw_features = torch.tensor(np.stack(crew_raw_feature_list, axis=0)).float()
         # batch_misc_info_raw_features = torch.tensor(np.stack(misc_info_raw_feature_list, axis=0)).float()
         # obs_batch = tuple([batch_job_raw_features, batch_plant_raw_features, batch_crew_raw_features, batch_misc_info_raw_features])
-        
+
         action_batch = torch.tensor(action_batch).long()
         reward_batch = torch.tensor(reward_batch).float()
         value_batch = torch.tensor(value_batch).float()
