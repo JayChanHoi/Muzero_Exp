@@ -185,12 +185,13 @@ class DataWorker(object):
         env = self.config.new_game(self.config.seed + self.rank)
         obs = env.reset(train=True)
         done = False
+        eps_reward, eps_steps, visit_entropies = 0, 0, 0
+        priorities = []
         with torch.no_grad():
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
                 model.eval()
-                priorities = []
-                eps_reward, eps_steps, visit_entropies = 0, 0, 0
+
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
@@ -212,6 +213,8 @@ class DataWorker(object):
                     env = self.config.new_game(self.config.seed + self.rank)
                     obs = env.reset(train=True)
                     done = False
+                    eps_reward, eps_steps, visit_entropies = 0, 0, 0
+                    priorities = []
 
 def update_weights(model, target_model, optimizer, replay_buffer, config):
     batch = ray.get(replay_buffer.sample_batch.remote(config.num_unroll_steps, config.td_steps,
