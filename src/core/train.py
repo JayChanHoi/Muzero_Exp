@@ -157,8 +157,8 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
     done_ = done
     while not done_ and eps_steps_ <= config.max_moves:
         root = CyphonNode(0)
-        # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-        obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
+        obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+        # obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
         network_output = model.initial_inference(obs)
         root.expand(env_.to_play(), env_.legal_actions(), network_output)
         root.add_exploration_noise(dirichlet_alpha=config.root_dirichlet_alpha,
