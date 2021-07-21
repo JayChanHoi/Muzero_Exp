@@ -738,7 +738,7 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
                 remain_qty_penalty = self.job.job_order_qty_tensor.sum().item()/self.job.job_initial_order_qty.sum().item()
                 time_factor = math.exp(((self.current_time - self.start_time).seconds / (datetime.strptime(self.env_config['max_time_str'], "%H:%M:%S") - self.start_time).seconds) - 1)
 
-                reward = (truck_cost_bonus - 0.5 * remain_qty_penalty) * time_factor
+                reward = (truck_cost_bonus) * time_factor
 
         elif action[0] == 1:
             self._iterate()
