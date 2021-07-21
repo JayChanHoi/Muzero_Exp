@@ -175,7 +175,7 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
                                              torch.tensor([[root.value()]])).item()
             priorities_.append(error + 1e-5)
 
-        print('data worker run steps', eps_steps_)
+        # print('data worker run steps', eps_steps_)
 
     return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_
 
@@ -193,6 +193,7 @@ class DataWorker(object):
         env = self.config.new_game(self.config.seed + self.rank)
         obs = env.reset(train=True)
         done = False
+        priorities = []
         with torch.no_grad():
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
