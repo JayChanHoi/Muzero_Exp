@@ -58,8 +58,8 @@ if __name__ == '__main__':
     # seeding random iterators
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    muzero_config = ScheudlingControlConfig(os.path.join(os.path.dirname(__file__), 'environment/env_config_real_data.yml'))
-
+    # muzero_config = ScheudlingControlConfig(os.path.join(os.path.dirname(__file__), 'environment/env_config_real_data.yml'))
+    from config.classic_control import muzero_config
     # set config as per arguments
     exp_path = muzero_config.set_config(args)
     exp_path, log_base_path = make_results_dir(exp_path, args)

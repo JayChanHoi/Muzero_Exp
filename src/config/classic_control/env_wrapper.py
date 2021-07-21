@@ -18,7 +18,7 @@ class ClassicControlWrapper(Game):
         self.frames = deque([], maxlen=k)
 
     def legal_actions(self):
-        return [Action(_) for _ in range(self.env.action_space.n)]
+        return [_ for _ in range(self.env.action_space.n)]
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
