@@ -152,17 +152,16 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
     eps_steps_ = eps_steps
     visit_entropies_ = visit_entropies
     priorities_ = priorities
-    config_ = config
     done_ = done
-    while not done_ and eps_steps_ <= config_.max_moves:
+    while not done_ and eps_steps_ <= config.max_moves:
         root = CyphonNode(0)
         # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
         obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
         network_output = model.initial_inference(obs)
         root.expand(env_.to_play(), env_.legal_actions(), network_output)
-        root.add_exploration_noise(dirichlet_alpha=config_.root_dirichlet_alpha,
-                                   exploration_fraction=config_.root_exploration_fraction)
-        MCTS(config_).run(root, env_.action_history(), model)
+        root.add_exploration_noise(dirichlet_alpha=config.root_dirichlet_alpha,
+                                   exploration_fraction=config.root_exploration_fraction)
+        MCTS(config).run(root, env_.action_history(), model)
         action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
         obs, reward, done_, _ = env_.step(action)
         env_.store_search_stats(root)
@@ -171,12 +170,12 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
         eps_steps_ += 1
         visit_entropies_ += visit_entropy
 
-        if not config_.use_max_priority:
+        if not config.use_max_priority:
             error = L1Loss(reduction='none')(network_output.value,
                                              torch.tensor([[root.value()]])).item()
             priorities_.append(error + 1e-5)
 
-    return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_, config_
+    return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_
 
 
 @ray.remote(num_cpus=1)
@@ -205,7 +204,7 @@ class DataWorker(object):
                 single_play_output = data_worker_single_play(obs, done, eps_steps, eps_reward, visit_entropies,
                                                              _temperature, priorities, env, model, self.config)
 
-                env, eps_steps, eps_reward, visit_entropies, priorities, obs, done, config = single_play_output
+                env, eps_steps, eps_reward, visit_entropies, priorities, obs, done = single_play_output
 
                 if done:
                     env.close()
