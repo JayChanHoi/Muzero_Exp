@@ -61,21 +61,21 @@ class ReplayBuffer(object):
             value_batch.append(value)
             policy_batch.append(policy)
 
-        obs_batch = torch.tensor(obs_batch).float()
-        # job_raw_feature_list = []
-        # plant_raw_feature_list = []
-        # crew_raw_feature_list = []
-        # misc_info_raw_feature_list = []
-        # for item in obs_batch:
-        #     job_raw_feature_list.append(item[0])
-        #     plant_raw_feature_list.append(item[1])
-        #     crew_raw_feature_list.append(item[2])
-        #     misc_info_raw_feature_list.append(item[3])
-        # batch_job_raw_features = torch.tensor(np.stack(job_raw_feature_list, axis=0)).float()
-        # batch_plant_raw_features = torch.tensor(np.stack(plant_raw_feature_list, axis=0)).float()
-        # batch_crew_raw_features = torch.tensor(np.stack(crew_raw_feature_list, axis=0)).float()
-        # batch_misc_info_raw_features = torch.tensor(np.stack(misc_info_raw_feature_list, axis=0)).float()
-        # obs_batch = tuple([batch_job_raw_features, batch_plant_raw_features, batch_crew_raw_features, batch_misc_info_raw_features])
+        # obs_batch = torch.tensor(obs_batch).float()
+        job_raw_feature_list = []
+        plant_raw_feature_list = []
+        crew_raw_feature_list = []
+        misc_info_raw_feature_list = []
+        for item in obs_batch:
+            job_raw_feature_list.append(item[0])
+            plant_raw_feature_list.append(item[1])
+            crew_raw_feature_list.append(item[2])
+            misc_info_raw_feature_list.append(item[3])
+        batch_job_raw_features = torch.tensor(np.stack(job_raw_feature_list, axis=0)).float()
+        batch_plant_raw_features = torch.tensor(np.stack(plant_raw_feature_list, axis=0)).float()
+        batch_crew_raw_features = torch.tensor(np.stack(crew_raw_feature_list, axis=0)).float()
+        batch_misc_info_raw_features = torch.tensor(np.stack(misc_info_raw_feature_list, axis=0)).float()
+        obs_batch = tuple([batch_job_raw_features, batch_plant_raw_features, batch_crew_raw_features, batch_misc_info_raw_features])
 
         action_batch = torch.tensor(action_batch).long()
         reward_batch = torch.tensor(reward_batch).float()
