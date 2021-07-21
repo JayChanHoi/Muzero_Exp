@@ -84,8 +84,8 @@ class Game:
                     # Note : a target network  based on recent parameters is used to provide a fresher,
                     # stable n-step bootstrapped target for the value function
                     obs = self.obs(bootstrap_index)
-                    # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-                    obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
+                    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    # obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)
                     value = network_output.value.data.cpu().item() * self.discount ** td_steps
             else:
@@ -105,16 +105,16 @@ class Game:
                 if model is not None and np.random.random() <= config.revisit_policy_search_rate:
                     root = CyphonNode(0)
                     obs = self.obs(current_index)
-                    # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-                    obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
+                    obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+                    # obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
                     network_output = model.initial_inference(obs)
                     root.expand(self.to_play(), self.legal_actions(), network_output)
-                    # MCTS(config).run(root, self.action_history(current_index), model)
-                    MCTS(config.pb_c_base, config.pb_c_init, config.discount, config.num_simulations).run(
-                        root,
-                        self.action_history(current_index),
-                        model
-                    )
+                    MCTS(config).run(root, self.action_history(current_index), model)
+                    # MCTS(config.pb_c_base, config.pb_c_init, config.discount, config.num_simulations).run(
+                    #     root,
+                    #     self.action_history(current_index),
+                    #     model
+                    # )
                     self.store_search_stats(root, current_index)
 
                 target_policies.append(self.child_visits[current_index])
