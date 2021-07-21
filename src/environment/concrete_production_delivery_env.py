@@ -735,10 +735,10 @@ class ConcreteProductionDeliveryEnvV2(gym.Env):
                 self.plant_truck_distance[:, selected_truck] = self.job_plant_route_distance[int(self.crew.crew_coor_tensor[selected_truck, 0].item()), :]
 
                 truck_cost_bonus = (self.crew.number_of_trucks_in_garage().item() / self.env_config['crew_preserved_capacity'])
-                remain_qty_penalty = self.job.job_order_qty_tensor.sum().item()/self.job.job_initial_order_qty.sum().item()
+                # remain_qty_penalty = self.job.job_order_qty_tensor.sum().item()/self.job.job_initial_order_qty.sum().item()
                 time_factor = math.exp(((self.current_time - self.start_time).seconds / (datetime.strptime(self.env_config['max_time_str'], "%H:%M:%S") - self.start_time).seconds) - 1)
 
-                reward = (truck_cost_bonus) * time_factor
+                reward = (truck_cost_bonus) * 1
 
         elif action[0] == 1:
             self._iterate()
