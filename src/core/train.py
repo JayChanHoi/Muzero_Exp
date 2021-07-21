@@ -175,6 +175,8 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
                                              torch.tensor([[root.value()]])).item()
             priorities_.append(error + 1e-5)
 
+        print('data worker run steps', eps_steps_)
+
     return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_
 
 
