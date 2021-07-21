@@ -1,6 +1,8 @@
 import logging
+from copy import deepcopy
 
 import ray
+
 import torch
 import torch.optim as optim
 from torch.nn import L1Loss
@@ -175,10 +177,10 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
                                              torch.tensor([[root.value()]])).item()
             priorities_.append(error + 1e-5)
 
-        # print('data worker run steps', eps_steps_)
+        print('data worker run steps', eps_steps_)
 
-    # return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_
-    return eps_steps_, eps_reward_, visit_entropies_, priorities_
+    return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_
+    # return eps_steps_, eps_reward_, visit_entropies_, priorities_
 
 
 @ray.remote(num_cpus=1)
@@ -191,17 +193,15 @@ class DataWorker(object):
 
     def run(self):
         model = self.config.get_uniform_network()
-
+        env = self.config.new_game(self.config.seed + self.rank)
+        obs = env.reset(train=True)
+        done = False
+        priorities = []
         with torch.no_grad():
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
                 model.eval()
-
-                env = self.config.new_game(self.config.seed + self.rank)
-                obs = env.reset(train=True)
-                done = False
-                priorities = []
-
+                
                 eps_reward, eps_steps, visit_entropies = 0, 0, 0
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
@@ -209,22 +209,22 @@ class DataWorker(object):
                 single_play_output = data_worker_single_play(obs, done, eps_steps, eps_reward, visit_entropies,
                                                              _temperature, priorities, env, model, self.config)
 
-                eps_steps, eps_reward, visit_entropies, priorities = single_play_output
+                env, eps_steps, eps_reward, visit_entropies, priorities, obs, done = single_play_output
 
                 if done:
                     env.close()
 
-                self.replay_buffer.save_game.remote(env,
+                self.replay_buffer.save_game.remote(deepcopy(env),
                                                     priorities=None if self.config.use_max_priority else priorities)
                 # Todo: refactor with env attributes to reduce variables
                 visit_entropies /= eps_steps
                 self.shared_storage.set_data_worker_logs.remote(eps_steps, eps_reward, _temperature, visit_entropies)
 
-                # if done:
-                #     env = self.config.new_game(self.config.seed + self.rank)
-                #     obs = env.reset(train=True)
-                #     done = False
-                #     priorities = []
+                if done:
+                    env = self.config.new_game(self.config.seed + self.rank)
+                    obs = env.reset(train=True)
+                    done = False
+                    priorities = []
 
 def update_weights(model, target_model, optimizer, replay_buffer, config):
     batch = ray.get(replay_buffer.sample_batch.remote(config.num_unroll_steps, config.td_steps,
