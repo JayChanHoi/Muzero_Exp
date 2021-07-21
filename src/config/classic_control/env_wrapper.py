@@ -4,7 +4,7 @@ import numpy as np
 
 import torch
 
-from ...core.game import Game, Action
+from ...core.game import Game
 
 class ClassicControlWrapper(Game):
     def __init__(self, env, k: int, discount: float):
