@@ -11,7 +11,7 @@ from .core.test import test
 from .core.train import train
 from .core.utils import init_logger, make_results_dir
 from .config.scheduling_game import ScheudlingControlConfig
-from .config.classic_control import muzero_config
+# from .config.classic_control import muzero_config
 
 if __name__ == '__main__':
     # Lets gather arguments
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     # seeding random iterators
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    # muzero_config = ScheudlingControlConfig(os.path.join(os.path.dirname(__file__), 'environment/env_config_real_data.yml'))
+    muzero_config = ScheudlingControlConfig(os.path.join(os.path.dirname(__file__), 'environment/env_config_real_data.yml'))
 
     # set config as per arguments
     exp_path = muzero_config.set_config(args)
