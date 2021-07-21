@@ -147,29 +147,36 @@ class SharedStorage(object):
 
 def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities, env, model, config):
     obs = init_obs
-    while not done and eps_steps <= config.max_moves:
+    env_ = env
+    eps_reward_ = eps_reward
+    eps_steps_ = eps_steps
+    visit_entropies_ = visit_entropies
+    priorities_ = priorities
+    config_ = config
+    done_ = done
+    while not done_ and eps_steps_ <= config_.max_moves:
         root = CyphonNode(0)
         # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
         obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
         network_output = model.initial_inference(obs)
-        root.expand(env.to_play(), env.legal_actions(), network_output)
-        root.add_exploration_noise(dirichlet_alpha=config.root_dirichlet_alpha,
-                                   exploration_fraction=config.root_exploration_fraction)
-        MCTS(config).run(root, env.action_history(), model)
+        root.expand(env_.to_play(), env_.legal_actions(), network_output)
+        root.add_exploration_noise(dirichlet_alpha=config_.root_dirichlet_alpha,
+                                   exploration_fraction=config_.root_exploration_fraction)
+        MCTS(config_).run(root, env_.action_history(), model)
         action, visit_entropy = select_action(root, temperature=_temperature, deterministic=False)
-        obs, reward, done, _ = env.step(action)
-        env.store_search_stats(root)
+        obs, reward, done_, _ = env_.step(action)
+        env_.store_search_stats(root)
 
-        eps_reward += reward
-        eps_steps += 1
-        visit_entropies += visit_entropy
+        eps_reward_ += reward
+        eps_steps_ += 1
+        visit_entropies_ += visit_entropy
 
-        if not config.use_max_priority:
+        if not config_.use_max_priority:
             error = L1Loss(reduction='none')(network_output.value,
                                              torch.tensor([[root.value()]])).item()
-            priorities.append(error + 1e-5)
+            priorities_.append(error + 1e-5)
 
-    return env, eps_steps, eps_reward, visit_entropies, priorities, obs, done, config
+    return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_, config_
 
 
 @ray.remote(num_cpus=1)
@@ -185,13 +192,13 @@ class DataWorker(object):
         env = self.config.new_game(self.config.seed + self.rank)
         obs = env.reset(train=True)
         done = False
-        eps_reward, eps_steps, visit_entropies = 0, 0, 0
-        priorities = []
         with torch.no_grad():
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
                 model.eval()
 
+                eps_reward, eps_steps, visit_entropies = 0, 0, 0
+                priorities = []
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
@@ -213,8 +220,6 @@ class DataWorker(object):
                     env = self.config.new_game(self.config.seed + self.rank)
                     obs = env.reset(train=True)
                     done = False
-                    eps_reward, eps_steps, visit_entropies = 0, 0, 0
-                    priorities = []
 
 def update_weights(model, target_model, optimizer, replay_buffer, config):
     batch = ray.get(replay_buffer.sample_batch.remote(config.num_unroll_steps, config.td_steps,
