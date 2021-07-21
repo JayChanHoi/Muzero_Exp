@@ -30,7 +30,7 @@ class ClassicControlWrapper(Game):
         return self.obs(len(self.rewards)), reward, done, info
 
     def reset(self, **kwargs):
-        obs = self.env.reset(**kwargs)
+        obs = self.env.reset()
 
         self.rewards = []
         self.history = []
