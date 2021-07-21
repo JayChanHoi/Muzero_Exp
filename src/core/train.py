@@ -322,7 +322,7 @@ def _train(config, shared_storage, replay_buffer, summary_writer, resume):
     target_model.eval()
 
     # wait for replay buffer to be non-empty
-    while ray.get(replay_buffer.size.remote()) < 20:
+    while ray.get(replay_buffer.size.remote()) < 50:
         pass
 
     for step_count in range(config.training_steps):
