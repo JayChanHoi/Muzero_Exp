@@ -201,7 +201,7 @@ class DataWorker(object):
             while ray.get(self.shared_storage.get_counter.remote()) < self.config.training_steps:
                 model.set_weights(ray.get(self.shared_storage.get_weights.remote()))
                 model.eval()
-                
+
                 eps_reward, eps_steps, visit_entropies = 0, 0, 0
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
