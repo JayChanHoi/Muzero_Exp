@@ -1,4 +1,8 @@
 import torch
+
+from collections import namedtuple
+import yaml
+
 from ...core.config import BaseMuZeroConfig, DiscreteSupport
 from .env_wrapper import BitcoinTradeGameWrapper
 from .model import BitcoinTradeNet
@@ -26,7 +30,8 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
             value_support=DiscreteSupport(-20, 20),
             reward_support=DiscreteSupport(-5, 5),
         )
-        self.env_config_path = env_config_path
+        env_config_dict = yaml.load(open(env_config_path, 'r'))
+        self.env_config = namedtuple('env_config', env_config_dict.keys())(**env_config_dict)
 
     def visit_softmax_temperature_fn(self, num_moves, trained_steps):
         if trained_steps < 0.5 * self.training_steps:
@@ -47,7 +52,7 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
                                self.inverse_value_transform, self.inverse_reward_transform)
 
     def new_game(self, seed=None, save_video=False, save_path=None, video_callable=None, uid=None):
-        env = BitcoinTradeEnv(self.env_config_path)
+        env = BitcoinTradeEnv(self.env_config)
 
         return BitcoinTradeGameWrapper(env, discount=self.discount, k=4)
 
