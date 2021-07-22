@@ -147,18 +147,16 @@ class SharedStorage(object):
 
         return reward, eps_lengths, test_score, temperature, visit_entropy
 
-def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropies, _temperature, priorities, env, model, config):
+def data_worker_single_play(init_obs, done, _temperature, priorities, env, model, config):
     obs = init_obs
     env_ = env
-    eps_reward_ = eps_reward
-    eps_steps_ = eps_steps
-    visit_entropies_ = visit_entropies
     priorities_ = priorities
     done_ = done
-    while not done_ and eps_steps_ <= config.max_moves:
+    eps_reward, eps_steps, visit_entropies = 0, 0, 0
+    while not done_ and eps_steps <= config.max_moves:
         root = CyphonNode(0)
-        # obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
-        obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
+        obs = torch.tensor(obs, dtype=torch.float32).unsqueeze(0)
+        # obs = tuple([torch.tensor(_).unsqueeze(0) for _ in obs])
         network_output = model.initial_inference(obs)
         root.expand(env_.to_play(), env_.legal_actions(), network_output)
         root.add_exploration_noise(dirichlet_alpha=config.root_dirichlet_alpha,
@@ -168,18 +166,18 @@ def data_worker_single_play(init_obs, done, eps_steps, eps_reward, visit_entropi
         obs, reward, done_, _ = env_.step(action)
         env_.store_search_stats(root)
 
-        eps_reward_ += reward
-        eps_steps_ += 1
-        visit_entropies_ += visit_entropy
+        eps_reward += reward
+        eps_steps += 1
+        visit_entropies += visit_entropy
 
         if not config.use_max_priority:
             error = L1Loss(reduction='none')(network_output.value,
                                              torch.tensor([[root.value()]])).item()
             priorities_.append(error + 1e-5)
 
-        print('data worker run steps', eps_steps_)
+        print('data worker run steps', eps_steps)
 
-    return env_, eps_steps_, eps_reward_, visit_entropies_, priorities_, obs, done_
+    return env_, eps_steps, eps_reward, visit_entropies, priorities_, obs, done_
     # return eps_steps_, eps_reward_, visit_entropies_, priorities_
 
 
@@ -206,12 +204,11 @@ class DataWorker(object):
                 # obs = env.reset(train=True)
                 # done = False
                 # priorities = []
-                eps_reward, eps_steps, visit_entropies = 0, 0, 0
+                # eps_reward, eps_steps, visit_entropies = 0, 0, 0
                 trained_steps = ray.get(self.shared_storage.get_counter.remote())
                 _temperature = self.config.visit_softmax_temperature_fn(num_moves=len(env.history),
                                                                         trained_steps=trained_steps)
-                single_play_output = data_worker_single_play(obs, done, eps_steps, eps_reward, visit_entropies,
-                                                             _temperature, priorities, env, model, self.config)
+                single_play_output = data_worker_single_play(obs, done, _temperature, priorities, env, model, self.config)
 
                 env, eps_steps, eps_reward, visit_entropies, priorities, obs, done = single_play_output
 
