@@ -25,7 +25,7 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
             value_support=DiscreteSupport(-20, 20),
             reward_support=DiscreteSupport(-5, 5),
         )
-        # self.env_config_path = env_config_path
+        self.env_config_path = env_config_path
 
     def visit_softmax_temperature_fn(self, num_moves, trained_steps):
         if trained_steps < 0.5 * self.training_steps:
@@ -42,12 +42,13 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
         self.action_space_size = game.action_space_size
 
     def get_uniform_network(self):
-        return BitcoinTradeGameWrapper()
+        return BitcoinTradeNet(self.action_space_size, self.reward_support.size, self.value_support.size,
+                               self.inverse_value_transform, self.inverse_reward_transform)
 
     def new_game(self, seed=None, save_video=False, save_path=None, video_callable=None, uid=None):
-        env = ConcreteProductionDeliveryEnvV2(self.env_config_path)
+        env = BitcoinTradeNet(self.env_config_path)
 
-        return SchedulingGameWrapper(env, discount=self.discount, k=4)
+        return BitcoinTradeGameWrapper(env, discount=self.discount, k=4)
 
     def scalar_reward_loss(self, prediction, target):
         return -(torch.log_softmax(prediction, dim=1) * target).sum(1)
