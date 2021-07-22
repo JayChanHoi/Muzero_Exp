@@ -2,7 +2,7 @@ import torch
 from ...core.config import BaseMuZeroConfig, DiscreteSupport
 from .env_wrapper import SchedulingGameWrapper
 from .model import MuZeroNetConcreteSchedulingGame
-from Muzero_scheduling_game.src.environment.concrete_scheduling.concrete_production_delivery_env import ConcreteProductionDeliveryEnvV2
+from ....src.environment.concrete_scheduling.concrete_production_delivery_env import ConcreteProductionDeliveryEnvV2
 
 class ScheudlingControlConfig(BaseMuZeroConfig):
     def __init__(self, env_config_path):
