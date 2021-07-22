@@ -215,6 +215,8 @@ class DataWorker(object):
                 if done:
                     env.close()
 
+                eps_reward /= eps_steps
+
                 self.replay_buffer.save_game.remote(deepcopy(env),
                                                     priorities=None if self.config.use_max_priority else priorities)
                 # Todo: refactor with env attributes to reduce variables

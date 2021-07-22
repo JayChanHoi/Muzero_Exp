@@ -62,7 +62,7 @@ if __name__ == '__main__':
     torch.manual_seed(args.seed)
     # muzero_config = ScheudlingControlConfig(os.path.join(os.path.dirname(__file__), 'environment/concrete_scheduling/env_config_real_data.yml'))
     muzero_config = BitcoinTradeConfig(os.path.join(os.path.dirname(__file__), 'environment/bitcoin/env_config.yml'))
-    
+
     # set config as per arguments
     exp_path = muzero_config.set_config(args)
     exp_path, log_base_path = make_results_dir(exp_path, args)
