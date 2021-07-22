@@ -64,7 +64,7 @@ class BaseMuZeroConfig(object):
         self.checkpoint_interval = checkpoint_interval
         self.window_size = window_size
         self.batch_size = batch_size
-        self.num_unroll_steps = 5
+        self.num_unroll_steps = 7
         self.td_steps = td_steps
         self.value_loss_coeff = value_loss_coeff
         self.device = 'cpu'
