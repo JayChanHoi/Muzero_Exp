@@ -26,7 +26,7 @@ class ResidualMLPBlock(nn.Module):
 class StateEncoder(nn.Module):
     def __init__(self, dropout_p):
         super(StateEncoder, self).__init__()
-        self.fc_1 = nn.Linear(122, 128)
+        self.fc_1 = nn.Linear(488, 128)
         self.relu_1 = nn.ReLU(inplace=True)
 
         self.residual_blocks = nn.ModuleList([ResidualMLPBlock(dropout_p) for _ in range(2)])
