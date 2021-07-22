@@ -28,7 +28,7 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
             window_size=10000,
             value_loss_coeff=1,
             value_support=DiscreteSupport(-20, 20),
-            reward_support=DiscreteSupport(-10, 10),
+            reward_support=DiscreteSupport(-5, 5),
         )
         env_config_dict = yaml.load(open(env_config_path, 'r'))
         self.env_config = namedtuple('env_config', env_config_dict.keys())(**env_config_dict)
