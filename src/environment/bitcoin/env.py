@@ -2,13 +2,16 @@ from .utils import read_bitcoin_history
 import numpy as np
 import os
 
-class BitcoinTradeEnv():
+import gym
+from gym import spaces
+
+class BitcoinTradeEnv(gym.Env):
     def __init__(self, env_config):
         self.trading_records = read_bitcoin_history(os.path.join(os.path.dirname(__file__), 'Binance_BTCUSDT_minute.csv'))
         self.trading_open_price = self.trading_records[:, 0]
         self.trading_close_price = self.trading_records[:, -3]
         self.env_config = env_config
-        # self.reset()
+        self.action_space = spaces.Discrete(11)
 
     def _get_trade_rep(self, trading_index):
         norm_constant = np.array([5e4, 5e4, 5e6]).reshape(1, -1)
