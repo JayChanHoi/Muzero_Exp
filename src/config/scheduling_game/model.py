@@ -223,11 +223,6 @@ class MuZeroNetConcreteSchedulingGame(BaseMuZeroNet):
         )
         self.action_space_n = action_space_n
 
-        self._prediction_value[-1].weight.data.fill_(0)
-        self._prediction_value[-1].bias.data.fill_(0)
-        self._dynamics_reward[-1].weight.data.fill_(0)
-        self._dynamics_reward[-1].bias.data.fill_(0)
-
     def prediction(self, state):
         actor_logit = self._prediction_actor(state)
         value = self._prediction_value(state)
