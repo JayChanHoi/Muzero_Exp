@@ -1,9 +1,10 @@
 from .utils import read_bitcoin_history
 import numpy as np
+import os
 
 class BitcoinTradeEnv():
-    def __init__(self, trading_data_csv_path, env_config):
-        self.trading_records = read_bitcoin_history(trading_data_csv_path)
+    def __init__(self, env_config):
+        self.trading_records = read_bitcoin_history(os.path.join(os.path.dirname(__file__), 'Binance_BTCUSDT_minute.csv'))
         self.trading_open_price = self.trading_records[:, 0]
         self.trading_close_price = self.trading_records[:, -3]
         self.env_config = env_config

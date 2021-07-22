@@ -2,6 +2,7 @@ import torch
 from ...core.config import BaseMuZeroConfig, DiscreteSupport
 from .env_wrapper import BitcoinTradeGameWrapper
 from .model import BitcoinTradeNet
+from ...environment.bitcoin.env import BitcoinTradeEnv
 
 class BitcoinTradeConfig(BaseMuZeroConfig):
     def __init__(self, env_config_path):
@@ -46,7 +47,7 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
                                self.inverse_value_transform, self.inverse_reward_transform)
 
     def new_game(self, seed=None, save_video=False, save_path=None, video_callable=None, uid=None):
-        env = BitcoinTradeNet(self.env_config_path)
+        env = BitcoinTradeEnv(self.env_config_path)
 
         return BitcoinTradeGameWrapper(env, discount=self.discount, k=4)
 
