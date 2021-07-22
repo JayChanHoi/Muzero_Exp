@@ -233,8 +233,8 @@ def update_weights(model, target_model, optimizer, replay_buffer, config):
                                                       config=config))
     obs_batch, action_batch, target_reward, target_value, target_policy, indices, weights = batch
 
-    # obs_batch = tuple([item.to(config.device) for item in obs_batch])
-    obs_batch = obs_batch.to(config.device)
+    obs_batch = tuple([item.to(config.device) for item in obs_batch])
+    # obs_batch = obs_batch.to(config.device)
     action_batch = action_batch.to(config.device).unsqueeze(-1)
     target_reward = target_reward.to(config.device)
     target_value = target_value.to(config.device)
