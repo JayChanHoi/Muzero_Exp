@@ -18,7 +18,7 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
             max_moves=1000,
             discount=0.998,
             dirichlet_alpha=0.25,
-            num_simulations=10,
+            num_simulations=30,
             batch_size=128,
             td_steps=5,
             num_actors=32,
