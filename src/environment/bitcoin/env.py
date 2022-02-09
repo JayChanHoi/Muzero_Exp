@@ -113,7 +113,7 @@ class BitcoinTradeEnv(gym.Env):
             self.current_asset_unit -= self.env_config.position_amount * 5
             self.current_cash_value += (self.trading_open_price[self.trading_index+1] * self.env_config.position_amount * 5 - self.env_config.trade_cost)
         else:
-            raise ValueError('action should only be picked from 0, 1, 2')
+            raise ValueError('action should only be picked from 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10')
 
         reward = (self.current_cash_value + self.current_asset_unit*self.trading_open_price[self.trading_index+1] - self.total_capital_history[-1]) / 10000
 
