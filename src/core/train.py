@@ -315,9 +315,9 @@ def _train(config, shared_storage, replay_buffer, summary_writer, resume):
     if resume:
         print('=> loading checkpoint : "{}"'.format(resume))
         if str(config.device) == 'cpu':
-            model.load_state_dict(torch.load(resume, map_location=torch.device('cpu'))['state_dict'])
+            model.load_state_dict(torch.load(resume, map_location=torch.device('cpu')))
         else:
-            model.load_state_dict(torch.load(resume)['state_dict'])
+            model.load_state_dict(torch.load(resume))
 
     model.train()
     optimizer = optim.SGD(model.parameters(), lr=config.lr_init, momentum=config.momentum,
@@ -351,7 +351,7 @@ def _train(config, shared_storage, replay_buffer, summary_writer, resume):
 
     shared_storage.set_weights.remote(model.get_weights())
 
-@ray.remote(num_cpus=1, num_gpus=1)
+@ray.remote(num_cpus=0.5, num_gpus=0)
 def _test(config, shared_storage):
     test_model = config.get_uniform_network().to('cpu')
     best_test_score = float('-inf')

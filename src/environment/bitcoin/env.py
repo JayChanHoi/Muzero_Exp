@@ -1,6 +1,6 @@
 from .utils import read_bitcoin_history
 import numpy as np
-import os
+import random
 
 import gym
 from gym import spaces
@@ -27,49 +27,7 @@ class BitcoinTradeEnv(gym.Env):
         the obs is not yet normalized.
         :return:
         '''
-        # raw_rep_list = [self._get_trade_rep(trading_index) for trading_index in range(self.trading_index-3, self.trading_index+1)]
-        # raw_rep = np.vstack(raw_rep_list)
         raw_rep = self._get_trade_rep(self.trading_index)
-        # if self.act_count == 0:
-        #     extra_rep = np.array([1, 0, 1, 0, 1, 0, 1, 0])
-        # elif self.act_count == 1:
-        #     extra_rep = np.concatenate(
-        #         [
-        #             np.array([1, 0, 1, 0, 1, 0]),
-        #             np.array([self.current_cash_value/self.env_config.initial_cash_value, (self.current_asset_unit/self.env_config.initial_cash_value)*raw_rep[-1, -3]])
-        #         ],
-        #         axis=0
-        #     )
-        # elif self.act_count == 2:
-        #     extra_rep = np.concatenate(
-        #         [
-        #             np.array([1, 0, 1, 0])*self.current_cash_value,
-        #             np.array([self.asset_cash_history[-2][0]/self.env_config.initial_cash_value, self.asset_cash_history[-2][1]*raw_rep[-2, -3]/self.env_config.initial_cash_value]),
-        #             np.array([self.asset_cash_history[-1][0]/self.env_config.initial_cash_value, self.asset_cash_history[-1][1]*raw_rep[-1, -3]/self.env_config.initial_cash_value])
-        #         ],
-        #         axis=0
-        #     )
-        # elif self.act_count == 3:
-        #     extra_rep = np.concatenate(
-        #         [
-        #             np.array([1, 0])*self.current_cash_value,
-        #             np.array([self.asset_cash_history[-3][0]/self.env_config.initial_cash_value, self.asset_cash_history[-3][1]*raw_rep[-3, -3]/self.env_config.initial_cash_value]),
-        #             np.array([self.asset_cash_history[-2][0]/self.env_config.initial_cash_value, self.asset_cash_history[-2][1]*raw_rep[-2, -3]/self.env_config.initial_cash_value]),
-        #             np.array([self.asset_cash_history[-1][0]/self.env_config.initial_cash_value, self.asset_cash_history[-1][1]*raw_rep[-1, -3]/self.env_config.initial_cash_value])
-        #         ],
-        #         axis=0
-        #     )
-        # else:
-        #     extra_rep = np.concatenate(
-        #         [
-        #             np.array([self.asset_cash_history[-4][0]/self.env_config.initial_cash_value, self.asset_cash_history[-4][1]*raw_rep[-4, -3]/self.env_config.initial_cash_value]),
-        #             np.array([self.asset_cash_history[-3][0]/self.env_config.initial_cash_value, self.asset_cash_history[-3][1]*raw_rep[-3, -3]/self.env_config.initial_cash_value]),
-        #             np.array([self.asset_cash_history[-2][0]/self.env_config.initial_cash_value, self.asset_cash_history[-2][1]*raw_rep[-2, -3]/self.env_config.initial_cash_value]),
-        #             np.array([self.asset_cash_history[-1][0]/self.env_config.initial_cash_value, self.asset_cash_history[-1][1]*raw_rep[-1, -3]/self.env_config.initial_cash_value])
-        #         ],
-        #         axis=0
-        #     )
-
         obs = np.concatenate([raw_rep, np.array([self.current_cash_value/self.env_config.initial_cash_value, (self.current_asset_unit * self.trading_open_price[self.trading_index+1])/self.env_config.initial_cash_value])], axis=0)
 
         return obs
@@ -98,7 +56,7 @@ class BitcoinTradeEnv(gym.Env):
         self.current_asset_unit = 0
         self.asset_cash_history = [[self.current_cash_value, self.current_asset_unit]]
         self.total_capital_history = [self.current_cash_value]
-        self.trading_index = np.random.randint(60+3, self.trading_records.shape[0] - self.env_config.episode_length)
+        self.trading_index = random.randint(60+3, self.trading_records.shape[0] - self.env_config.episode_length)
         self.obs = self._prep_obs()
 
         return self.obs
@@ -194,11 +152,10 @@ if __name__ == '__main__':
     from collections import namedtuple
     from itertools import count
 
-    data_path = os.path.join('/'.join(os.getcwd().split('/')[:-1]), 'data/Binance_BTCUSDT_minute.csv')
-    config_path = os.path.join(os.getcwd(), 'config/env_config.yml')
+    config_path = os.path.join(os.getcwd(), 'bitcoin/env_config.yml')
     env_config = yaml.load(open(config_path, 'r'))
     env_config = namedtuple('env_config', env_config.keys())(**env_config)
-    bitcon_trade_env = BitcoinTradeEnv(data_path, env_config)
+    bitcon_trade_env = BitcoinTradeEnv(env_config)
     state = bitcon_trade_env.reset()
     rewards = []
     for _ in count():
