@@ -32,7 +32,7 @@ class BitcoinTradeGameWrapper(Game):
         return self.obs(len(self.rewards)), reward, done, _
 
     def reset(self, train=False):
-        obs = self.env.reset()
+        obs = self.env.reset(train)
 
         self.rewards = []
         self.history = []

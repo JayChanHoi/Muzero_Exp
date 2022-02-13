@@ -50,13 +50,17 @@ class BitcoinTradeEnv(gym.Env):
 
         return mask
 
-    def reset(self):
+    def reset(self, train:bool):
         self.act_count = 0
         self.current_cash_value = self.env_config.initial_cash_value
         self.current_asset_unit = 0
         self.asset_cash_history = [[self.current_cash_value, self.current_asset_unit]]
         self.total_capital_history = [self.current_cash_value]
-        self.trading_index = random.randint(60+3, self.trading_records.shape[0] - self.env_config.episode_length)
+        if train:
+            self.trading_index = random.randint(60+3, self.trading_records.shape[0] - self.env_config.episode_length - 20000)
+        else:
+            self.trading_index = random.randint(self.trading_records.shape[0] - 20000, self.trading_records.shape[0] - self.env_config.episode_length)
+            
         self.obs = self._prep_obs()
 
         return self.obs
@@ -123,6 +127,7 @@ class BitcoinTradeEnv(gym.Env):
         self.trading_index += 1
         if self.act_count == self.env_config.episode_length:
             done = True
+            reward += (self.current_cash_value + self.current_asset_unit*self.trading_open_price[self.trading_index+1] - self.total_capital_history[0]) / 10000
 
         return reward, done
 

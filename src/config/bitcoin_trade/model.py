@@ -7,10 +7,10 @@ class ResidualMLPBlock(nn.Module):
     def __init__(self, dropout_p):
         super(ResidualMLPBlock, self).__init__()
         self.block = nn.Sequential(
-            nn.Linear(128, 128),
+            nn.Linear(256, 256),
             nn.ReLU(inplace=True),
             nn.Dropout(dropout_p),
-            nn.Linear(128, 128)
+            nn.Linear(256, 256)
         )
         self.relu = nn.ReLU(inplace=True)
 
@@ -26,12 +26,12 @@ class ResidualMLPBlock(nn.Module):
 class StateEncoder(nn.Module):
     def __init__(self, dropout_p):
         super(StateEncoder, self).__init__()
-        self.fc_1 = nn.Linear(488, 128)
+        self.fc_1 = nn.Linear(488, 256)
         self.relu_1 = nn.ReLU(inplace=True)
 
         self.residual_blocks = nn.ModuleList([ResidualMLPBlock(dropout_p) for _ in range(2)])
 
-        self.fc_last = nn.Linear(128, 256)
+        self.fc_last = nn.Linear(256,512)
         self.relu_last = nn.ReLU(inplace=True)
 
     def forward(self, x):
@@ -54,7 +54,7 @@ class BitcoinTradeNet(BaseMuZeroNet):
                  inverse_value_transform,
                  inverse_reward_transform):
         super(BitcoinTradeNet, self).__init__(inverse_value_transform, inverse_reward_transform)
-        self.hx_size = 256
+        self.hx_size = 512
         self._representation = StateEncoder(
             dropout_p=0.1
         )
