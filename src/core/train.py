@@ -89,7 +89,7 @@ def _log(config, step_count, log_data, model, replay_buffer, lr, worker_logs, su
         if test_score is not None:
             summary_writer.add_scalar('train/test_score', test_score, step_count)
 
-@ray.remote(num_cpus=1)
+@ray.remote(num_cpus=1.0)
 class SharedStorage(object):
     def __init__(self, model):
         self.step_counter = 0
@@ -181,7 +181,7 @@ def data_worker_single_play(init_obs, done, _temperature, priorities, env, model
     # return eps_steps_, eps_reward_, visit_entropies_, priorities_
 
 
-@ray.remote(num_cpus=1)
+@ray.remote(num_cpus=0.25)
 class DataWorker(object):
     def __init__(self, rank, config, shared_storage, replay_buffer):
         self.rank = rank
@@ -351,7 +351,7 @@ def _train(config, shared_storage, replay_buffer, summary_writer, resume):
 
     shared_storage.set_weights.remote(model.get_weights())
 
-@ray.remote(num_cpus=0.5, num_gpus=0)
+@ray.remote(num_cpus=0.2, num_gpus=0)
 def _test(config, shared_storage):
     test_model = config.get_uniform_network().to('cpu')
     best_test_score = float('-inf')

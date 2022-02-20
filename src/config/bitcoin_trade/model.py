@@ -4,13 +4,13 @@ import torch.nn as nn
 from ...core.model import BaseMuZeroNet
 
 class ResidualMLPBlock(nn.Module):
-    def __init__(self, dropout_p):
+    def __init__(self, dropout_p, dim):
         super(ResidualMLPBlock, self).__init__()
         self.block = nn.Sequential(
-            nn.Linear(256, 256),
+            nn.Linear(dim, dim),
             nn.ReLU(inplace=True),
             nn.Dropout(dropout_p),
-            nn.Linear(256, 256)
+            nn.Linear(dim, dim)
         )
         self.relu = nn.ReLU(inplace=True)
 
@@ -26,12 +26,17 @@ class ResidualMLPBlock(nn.Module):
 class StateEncoder(nn.Module):
     def __init__(self, dropout_p):
         super(StateEncoder, self).__init__()
-        self.fc_1 = nn.Linear(488, 256)
+        self.fc_1 = nn.Linear(488, 128)
         self.relu_1 = nn.ReLU(inplace=True)
 
-        self.residual_blocks = nn.ModuleList([ResidualMLPBlock(dropout_p) for _ in range(2)])
+        self.residual_blocks = nn.ModuleList([
+            ResidualMLPBlock(dropout_p, 128),
+            nn.Linear(128, 256),
+            nn.ReLU(inplace=True),
+            ResidualMLPBlock(dropout_p, 256)
+        ])
 
-        self.fc_last = nn.Linear(256,512)
+        self.fc_last = nn.Linear(256, 256)
         self.relu_last = nn.ReLU(inplace=True)
 
     def forward(self, x):
@@ -54,19 +59,19 @@ class BitcoinTradeNet(BaseMuZeroNet):
                  inverse_value_transform,
                  inverse_reward_transform):
         super(BitcoinTradeNet, self).__init__(inverse_value_transform, inverse_reward_transform)
-        self.hx_size = 512
+        self.hx_size = 256
         self._representation = StateEncoder(
             dropout_p=0.1
         )
 
         self._dynamics_state = nn.Sequential(
             nn.Linear(self.hx_size + action_space_n, self.hx_size * 2),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Dropout(0.1),
             nn.Linear(self.hx_size * 2, self.hx_size),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Linear(self.hx_size, self.hx_size),
-            nn.ReLU(),
+            nn.LeakyReLU(),
         )
         self._dynamics_reward = nn.Sequential(
             nn.Linear(self.hx_size + action_space_n, self.hx_size * 2),

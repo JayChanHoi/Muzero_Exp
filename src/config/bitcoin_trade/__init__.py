@@ -18,17 +18,17 @@ class BitcoinTradeConfig(BaseMuZeroConfig):
             max_moves=500,
             discount=0.998,
             dirichlet_alpha=0.25,
-            num_simulations=30,
-            batch_size=64,
+            num_simulations=50,
+            batch_size=512,
             td_steps=5,
-            num_actors=5,
+            num_actors=20,
             lr_init=0.05,
             lr_decay_rate=0.01,
             lr_decay_steps=10000,
             window_size=5000,
             value_loss_coeff=1,
-            value_support=DiscreteSupport(-20, 20),
-            reward_support=DiscreteSupport(-5, 5),
+            value_support=DiscreteSupport(-40, 40, 1.0),
+            reward_support=DiscreteSupport(-5, 5, 0.2),
         )
         env_config_dict = yaml.load(open(env_config_path, 'r'))
         self.env_config = namedtuple('env_config', env_config_dict.keys())(**env_config_dict)

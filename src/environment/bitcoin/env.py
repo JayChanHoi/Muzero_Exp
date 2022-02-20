@@ -119,7 +119,7 @@ class BitcoinTradeEnv(gym.Env):
         else:
             raise ValueError('action should only be picked from 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10')
 
-        reward = (self.current_cash_value + self.current_asset_unit*self.trading_open_price[self.trading_index+1] - self.total_capital_history[-1]) / 10000
+        reward = (self.current_cash_value + self.current_asset_unit*self.trading_open_price[self.trading_index+1] - self.total_capital_history[0]) / (10000 * (self.act_count + 1))
 
         self.asset_cash_history.append([self.current_cash_value, self.current_asset_unit])
         self.total_capital_history.append(self.current_cash_value + self.current_asset_unit*self.trading_open_price[self.trading_index+1])

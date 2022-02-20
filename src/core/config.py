@@ -2,12 +2,14 @@ import os
 import torch
 from .game import Game
 
+import numpy as np
+
 class DiscreteSupport:
-    def __init__(self, min: int, max: int):
+    def __init__(self, min: int, max: int, step_size):
         assert min < max
         self.min = min
         self.max = max
-        self.range = range(min, max + 1)
+        self.range = np.arange(min, max + 1, step_size).tolist()
         self.size = len(self.range)
 
 class BaseMuZeroConfig(object):
