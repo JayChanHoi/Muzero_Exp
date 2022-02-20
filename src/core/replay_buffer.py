@@ -3,7 +3,7 @@ import ray
 import torch
 
 @ray.remote(num_cpus=1)
-class ReplayBuffer(object):
+class ReplayBuffer():
     """Reference : DISTRIBUTED PRIORITIZED EXPERIENCE REPLAY
     Algo. 1 and Algo. 2 in Page-3 of (https://arxiv.org/pdf/1803.00933.pdf
     """
@@ -22,7 +22,7 @@ class ReplayBuffer(object):
 
     def save_game(self, game, priorities=None):
         if priorities is None:
-            max_prio = self.priorities.max() if self.buffer else 1
+            max_prio = max(self.priorities) if self.buffer else 1
             self.priorities = np.concatenate((self.priorities, [max_prio for _ in range(len(game))]))
         else:
             assert len(game) == len(priorities), " priorities should be of same length as the game steps"
@@ -42,9 +42,6 @@ class ReplayBuffer(object):
         weights = (total * probs[indices]) ** (-beta)
         weights /= weights.max()
 
-        indices = torch.tensor(indices)
-        weights = torch.tensor(weights).float()
-
         for idx in indices:
             game_id, game_pos = self.game_look_up[idx]
             game_id -= self.base_idx
@@ -62,25 +59,13 @@ class ReplayBuffer(object):
             policy_batch.append(policy)
 
         obs_batch = torch.tensor(obs_batch).float()
-        # job_raw_feature_list = []
-        # plant_raw_feature_list = []
-        # crew_raw_feature_list = []
-        # misc_info_raw_feature_list = []
-        # for item in obs_batch:
-        #     job_raw_feature_list.append(item[0])
-        #     plant_raw_feature_list.append(item[1])
-        #     crew_raw_feature_list.append(item[2])
-        #     misc_info_raw_feature_list.append(item[3])
-        # batch_job_raw_features = torch.tensor(np.stack(job_raw_feature_list, axis=0)).float()
-        # batch_plant_raw_features = torch.tensor(np.stack(plant_raw_feature_list, axis=0)).float()
-        # batch_crew_raw_features = torch.tensor(np.stack(crew_raw_feature_list, axis=0)).float()
-        # batch_misc_info_raw_features = torch.tensor(np.stack(misc_info_raw_feature_list, axis=0)).float()
-        # obs_batch = tuple([batch_job_raw_features, batch_plant_raw_features, batch_crew_raw_features, batch_misc_info_raw_features])
-
         action_batch = torch.tensor(action_batch).long()
         reward_batch = torch.tensor(reward_batch).float()
         value_batch = torch.tensor(value_batch).float()
         policy_batch = torch.tensor(policy_batch).float()
+
+        weights = torch.tensor(weights).float()
+        indices = torch.tensor(indices).long()
 
         return obs_batch, action_batch, reward_batch, value_batch, policy_batch, indices, weights
 

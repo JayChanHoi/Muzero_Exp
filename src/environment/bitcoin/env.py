@@ -60,7 +60,7 @@ class BitcoinTradeEnv(gym.Env):
             self.trading_index = random.randint(60+3, self.trading_records.shape[0] - self.env_config.episode_length - 20000)
         else:
             self.trading_index = random.randint(self.trading_records.shape[0] - 20000, self.trading_records.shape[0] - self.env_config.episode_length)
-            
+
         self.obs = self._prep_obs()
 
         return self.obs
